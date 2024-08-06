@@ -239,10 +239,12 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		identity.setIdentityCardNumber(identityCardNumberInput.getText());
 		{
 			Date d = (Date) identityCardDateInput.getValue();
-			GregorianCalendar calendar = new GregorianCalendar();
-			calendar.setTime(d);
-			XMLGregorianCalendar d2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
-			identity.setDocValidityDate(d2);
+			if (d != null) {
+				GregorianCalendar calendar = new GregorianCalendar();
+				calendar.setTime(d);
+				XMLGregorianCalendar d2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
+				identity.setDocValidityDate(d2);
+			}
 		}
 		identity.setOrganizationName(identityOrganisationNameInput.getText());
 		identity.setIssuerCode(identityIssuerCodeInput.getText());
@@ -290,12 +292,14 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				BigDecimal.ZERO : new BigDecimal(udTotalWeightInput.getText()));
 		{
 			Date d = (Date) udManufactureDateInput.getValue();
-			GregorianCalendar calendar = new GregorianCalendar();
-			calendar.setTime(d);
-			XMLGregorianCalendar d2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
-			VehicleProdDateType vehicleProdDateType = new VehicleProdDateType();
-			vehicleProdDateType.setManufactureDate(d2);
-			vehicleType.setVehicleProdDate(vehicleProdDateType);
+			if (d != null) {
+				GregorianCalendar calendar = new GregorianCalendar();
+				calendar.setTime(d);
+				XMLGregorianCalendar d2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
+				VehicleProdDateType vehicleProdDateType = new VehicleProdDateType();
+				vehicleProdDateType.setManufactureDate(d2);
+				vehicleType.setVehicleProdDate(vehicleProdDateType);
+			}
 		}
 		utilDetails.setVINID(udVinInput.getText());
 	}
