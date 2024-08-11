@@ -1,10 +1,7 @@
 package pro.karagodin;
 
-import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
 import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXException;
 import ru.customs.commonaggregatetypes._5_22.RFOrganizationFeaturesType;
@@ -37,21 +34,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.UUID;
 
 
 public class DeltaFrame extends BaseFrame implements ActionListener {
 
-	private final XsdValidator xsdValidator = new XsdValidator();
-	private final Unmarshaller jaxbUnmarshaller;
-	private final Marshaller jaxbMarshaller;
-
 	private RecyclingDetailsType data;
 
-	public DeltaFrame() throws Exception {
-		JAXBContext jaxbContext = JAXBContext.newInstance(RecyclingDetailsType.class);
-		this.jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		this.jaxbMarshaller = jaxbContext.createMarshaller();
-
+	public DeltaFrame() {
 		setVisible(true);
 	}
 
@@ -65,17 +55,28 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			}
 		} catch (Exception e) {
 			List<String> messages = new ArrayList<>();
-			messages.add(e.getMessage());
+			String message = e.getMessage();
+			if (e.getMessage() == null) {
+				Throwable cause = e.getCause();
+				if (cause != null) {
+					message = cause.getMessage();
+				}
+			}
+			if (message != null) {
+				messages.add(message);
+			} else {
+				messages.add(e.toString());
+			}
 			messages.add("");
 			for (StackTraceElement elem : e.getStackTrace()) {
 				messages.add(elem.toString());
 			}
-			String message = String.join("\n", messages);
+			String text = String.join("\n", messages);
 
 			JDialog d = new JDialog(this, "Ошибка");
 			JTextArea a = new JTextArea();
 			a.setEditable(false);
-			a.setText(message);
+			a.setText(text);
 			d.add(a);
 			d.setSize(500, 500);
 			d.setLocationRelativeTo(null);
@@ -90,7 +91,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			fillDataFromFields();
 			File file = fileChooser.getSelectedFile();
 			JAXBElement<RecyclingDetailsType> element = new ObjectFactory().createRecyclingDetails(data);
-			jaxbMarshaller.marshal(element, file);
+			XmlUtils.marshall(element, file);
 		}
 	}
 
@@ -101,8 +102,8 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		fileChooser.setAcceptAllFileFilterUsed(false);
 		if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 			String xml = Files.readString(fileChooser.getSelectedFile().toPath());
-			xsdValidator.validate(xml);
-			data = jaxbUnmarshaller.unmarshal(new StreamSource(new StringReader(xml)), RecyclingDetailsType.class).getValue();
+			XmlUtils.validate(xml);
+			data = XmlUtils.unMarshall(new StreamSource(new StringReader(xml)), RecyclingDetailsType.class).getValue();
 
 			fillFieldsFromData();
 		}
@@ -187,13 +188,35 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				}
 			}
 			udVinInput.setText(util.getVINID());
+			BigDecimal importCustomsDuty = util.getImportCustomsDuty();
+			if (importCustomsDuty != null)
+				payImportCustomsDutyInput.setText(importCustomsDuty.toPlainString());
+			BigDecimal excise = util.getExcise();
+			if (excise != null)
+				payExciseInput.setText(excise.toPlainString());
+			BigDecimal vat = util.getVAT();
+			if (vat != null)
+				payVatInput.setText(vat.toPlainString());
+			XMLGregorianCalendar calendar = util.getBorderCrossingDate();
+			if (calendar != null)
+				payBorderCrossingDateInput.setValue(calendar.toGregorianCalendar().getTime());
+			BigDecimal dutyTaxFreeRate = util.getDutyTaxFeeRateValue();
+			if (dutyTaxFreeRate != null)
+				payDutyTaxFeeRateInput.setText(dutyTaxFreeRate.toPlainString());
+			BigDecimal coefficient = util.getCoefficient();
+			if (coefficient != null)
+				payCoefficientInput.setText(coefficient.toPlainString());
 		}
 		surNameInput.setText(data.getPayer().get(0).getPerson().getPersonSurname());
 	}
 
 	private void fillDataFromFields() throws DatatypeConfigurationException {
-		if (data == null)
+		if (data == null) {
 			data = new RecyclingDetailsType();
+			data.setDocumentModeID("1002048E");
+			data.setDocumentID(UUID.randomUUID().toString());
+			data.setDocType(BigDecimal.ONE);
+		}
 		List<PayerTPOType> payers = data.getPayer();
 		PayerTPOType payer;
 		if (payers.isEmpty()) {
@@ -270,7 +293,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		vehicleType.setTransportCategoryCode(udTransportCategoryCodeInput.getText());
 		vehicleType.setMarkCode(udMarkCodeInput.getText());
 		vehicleType.setMark(udMarkInput.getText());
-		vehicleType.setMark(udModelInput.getText());
+		vehicleType.setModel(udModelInput.getText());
 		vehicleType.setEngineVolumeQuanity(StringUtils.isEmpty(udEngineVolumeQuantityInput.getText()) ?
 				BigDecimal.ZERO : new BigDecimal(udEngineVolumeQuantityInput.getText()));
 		utilDetails.setVehicle(vehicleType);
@@ -302,5 +325,24 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			}
 		}
 		utilDetails.setVINID(udVinInput.getText());
+		utilDetails.setImportCustomsDuty(StringUtils.isEmpty(payImportCustomsDutyInput.getText()) ?
+				BigDecimal.ZERO : new BigDecimal(payImportCustomsDutyInput.getText()));
+		utilDetails.setExcise(StringUtils.isEmpty(payExciseInput.getText()) ?
+				BigDecimal.ZERO : new BigDecimal(payExciseInput.getText()));
+		utilDetails.setVAT(StringUtils.isEmpty(payVatInput.getText()) ?
+				BigDecimal.ZERO : new BigDecimal(payVatInput.getText()));
+		{
+			Date d = (Date) payBorderCrossingDateInput.getValue();
+			if (d != null) {
+				GregorianCalendar calendar = new GregorianCalendar();
+				calendar.setTime(d);
+				XMLGregorianCalendar d2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
+				utilDetails.setBorderCrossingDate(d2);
+			}
+		}
+		utilDetails.setDutyTaxFeeRateValue(StringUtils.isEmpty(payDutyTaxFeeRateInput.getText()) ?
+				BigDecimal.ZERO : new BigDecimal(payDutyTaxFeeRateInput.getText()));
+		utilDetails.setCoefficient(StringUtils.isEmpty(payCoefficientInput.getText()) ?
+				BigDecimal.ZERO : new BigDecimal(payCoefficientInput.getText()));
 	}
 }

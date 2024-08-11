@@ -1,6 +1,8 @@
 package pro.karagodin;
 
+import javax.swing.InputVerifier;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -11,6 +13,8 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
@@ -25,6 +29,28 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField nameInput = new JTextField();
 	protected final JTextField middleNameInput = new JTextField();
 	protected final JTextField innInput = new JTextField();
+	protected final JLabel innLabel = new JLabel();
+	{
+		innInput.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				String value = innInput.getText();
+				if (value != null) {
+					int l = value.length();
+					if (l == 10 || l == 12) {
+						innLabel.setText("");
+					} else {
+						innLabel.setText("ИНН должен быть 10 или 12 символов");
+					}
+					for (char c : value.toCharArray()) {
+						if (!Character.isDigit(c)) {
+							innLabel.setText("ИНН должен состоять только из цифр");
+						}
+					}
+				}
+			}
+		});
+	}
 	protected final JTextField registrationInput = new JTextField();
 	protected final JTextField countryCodeInput = new JTextField();
 	protected final JTextField countryNameInput = new JTextField();
@@ -66,12 +92,22 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		udManufactureDateInput = new JFormattedTextField(df);
 	}
 	protected final JTextField udVinInput = new JTextField();
-
+	protected final JTextField payImportCustomsDutyInput = new JTextField();
+	protected final JTextField payExciseInput = new JTextField();
+	protected final JTextField payVatInput = new JTextField();
+	protected final JFormattedTextField payBorderCrossingDateInput;
+	{
+		DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+		DateFormatter df = new DateFormatter(format);
+		payBorderCrossingDateInput = new JFormattedTextField(df);
+	}
+	protected final JTextField payDutyTaxFeeRateInput = new JTextField();
+	protected final JTextField payCoefficientInput = new JTextField();
 
 
 	public BaseFrame() {
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		setSize(800,800);
+		setSize(900,1000);
 		setLayout(null);
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -98,6 +134,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(middleNameInput, 250, 40);
 		addComponentToFrame(new JLabel("ИНН"), 5, 60);
 		addComponentToFrame(innInput, 250, 60);
+		addComponentToFrame(innLabel, 500, 60);
+		innLabel.setSize(300, 20);
 		addComponentToFrame(new JLabel("Признак постоянной регистрации"), 5, 80);
 		addComponentToFrame(registrationInput, 250, 80);
 		addComponentToFrame(new JLabel("Код страны"), 5, 100);
@@ -130,36 +168,50 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(identityIssuerCodeInput, 250, 360);
 		addComponentToFrame(new JLabel("Код страны органа выдавшего УЛ"), 5, 380);
 		addComponentToFrame(identityCountryCodeInput, 250, 380);
-		addComponentToFrame(new JLabel("Номер ЭПТС"), 5, 400);
-		addComponentToFrame(udVehicleEPassportIdInput, 250, 400);
-		addComponentToFrame(new JLabel("Признак ТС"), 5, 420);
-		addComponentToFrame(udSignInput, 250, 420);
-		addComponentToFrame(new JLabel("Вид ТС"), 5, 440);
-		addComponentToFrame(udTransportKindCodeInput, 250, 440);
-		addComponentToFrame(new JLabel("Категория ТС"), 5, 460);
-		addComponentToFrame(udTransportCategoryCodeInput, 250, 460);
-		addComponentToFrame(new JLabel("Код марки ТС"), 5, 480);
-		addComponentToFrame(udMarkCodeInput, 250, 480);
-		addComponentToFrame(new JLabel("Наименование марки ТС"), 5, 500);
-		addComponentToFrame(udMarkInput, 250, 500);
-		addComponentToFrame(new JLabel("Модель ТС"), 5, 520);
-		addComponentToFrame(udModelInput, 250, 520);
-		addComponentToFrame(new JLabel("Объем двигателя"), 5, 540);
-		addComponentToFrame(udEngineVolumeQuantityInput, 250, 540);
-		addComponentToFrame(new JLabel("Код типа двигателя"), 5, 560);
-		addComponentToFrame(udEngineModelCodeInput, 250, 560);
-		addComponentToFrame(new JLabel("Наименование двигателя"), 5, 580);
-		addComponentToFrame(udEngineModelNameInput, 250, 580);
-		addComponentToFrame(new JLabel("Модель двигателя"), 5, 600);
-		addComponentToFrame(udEngineModelInput, 250, 600);
-		addComponentToFrame(new JLabel("Мощность двигателя КВТ"), 5, 620);
-		addComponentToFrame(udEnginePowerKvtInput, 250, 620);
-		addComponentToFrame(new JLabel("Максимальная масса ТОНН"), 5, 640);
-		addComponentToFrame(udTotalWeightInput, 250, 640);
-		addComponentToFrame(new JLabel("Дата производства"), 5, 660);
-		addComponentToFrame(udManufactureDateInput, 250, 660);
-		addComponentToFrame(new JLabel("Идентификационный номер"), 5, 680);
-		addComponentToFrame(udVinInput, 250, 680);
+		//Раздел 2
+		addComponentToFrame(new JLabel("Номер ЭПТС"), 5, 420);
+		addComponentToFrame(udVehicleEPassportIdInput, 250, 420);
+		addComponentToFrame(new JLabel("Признак ТС"), 5, 440);
+		addComponentToFrame(udSignInput, 250, 440);
+		addComponentToFrame(new JLabel("Вид ТС"), 5, 460);
+		addComponentToFrame(udTransportKindCodeInput, 250, 460);
+		addComponentToFrame(new JLabel("Категория ТС"), 5, 480);
+		addComponentToFrame(udTransportCategoryCodeInput, 250, 480);
+		addComponentToFrame(new JLabel("Код марки ТС"), 5, 500);
+		addComponentToFrame(udMarkCodeInput, 250, 500);
+		addComponentToFrame(new JLabel("Наименование марки ТС"), 5, 520);
+		addComponentToFrame(udMarkInput, 250, 520);
+		addComponentToFrame(new JLabel("Модель ТС"), 5, 540);
+		addComponentToFrame(udModelInput, 250, 540);
+		addComponentToFrame(new JLabel("Объем двигателя"), 5, 560);
+		addComponentToFrame(udEngineVolumeQuantityInput, 250, 560);
+		addComponentToFrame(new JLabel("Код типа двигателя"), 5, 580);
+		addComponentToFrame(udEngineModelCodeInput, 250, 580);
+		addComponentToFrame(new JLabel("Наименование двигателя"), 5, 600);
+		addComponentToFrame(udEngineModelNameInput, 250, 600);
+		addComponentToFrame(new JLabel("Модель двигателя"), 5, 620);
+		addComponentToFrame(udEngineModelInput, 250, 620);
+		addComponentToFrame(new JLabel("Мощность двигателя КВТ"), 5, 640);
+		addComponentToFrame(udEnginePowerKvtInput, 250, 640);
+		addComponentToFrame(new JLabel("Максимальная масса ТОНН"), 5, 660);
+		addComponentToFrame(udTotalWeightInput, 250, 660);
+		addComponentToFrame(new JLabel("Дата производства (dd.MM.yyyy)"), 5, 680);
+		addComponentToFrame(udManufactureDateInput, 250, 680);
+		addComponentToFrame(new JLabel("Идентификационный номер"), 5, 700);
+		addComponentToFrame(udVinInput, 250, 700);
+		//Раздел 3
+		addComponentToFrame(new JLabel("Разница в таможенной пошлине"), 5, 740);
+		addComponentToFrame(payImportCustomsDutyInput, 250, 740);
+		addComponentToFrame(new JLabel("Разница в акцизе"), 5, 760);
+		addComponentToFrame(payExciseInput, 250, 760);
+		addComponentToFrame(new JLabel("Разница в НДС"), 5, 780);
+		addComponentToFrame(payVatInput, 250, 780);
+		addComponentToFrame(new JLabel("Дата пересечения границы (dd.MM.yyyy)"), 5, 800);
+		addComponentToFrame(payBorderCrossingDateInput, 250, 800);
+		addComponentToFrame(new JLabel("Базовая ставка УС"), 5, 820);
+		addComponentToFrame(payDutyTaxFeeRateInput, 250, 820);
+		addComponentToFrame(new JLabel("Коэффициент"), 5, 840);
+		addComponentToFrame(payCoefficientInput, 250, 840);
 	}
 
 	private void addComponentToFrame(Component c, int x, int y) {
