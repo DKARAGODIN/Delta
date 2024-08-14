@@ -84,11 +84,13 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		}
 	}
 
-	private void saveFile() throws JAXBException, DatatypeConfigurationException {
+	private void saveFile() throws JAXBException, DatatypeConfigurationException, IOException {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Сохранить файл");
 		if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			fillDataFromFields();
+			OfficeUtils.createDoc(data);
+			OfficeUtils.createCalc(data);
 			File file = fileChooser.getSelectedFile();
 			JAXBElement<RecyclingDetailsType> element = new ObjectFactory().createRecyclingDetails(data);
 			XmlUtils.marshall(element, file);
