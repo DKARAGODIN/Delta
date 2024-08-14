@@ -5,6 +5,7 @@ import jakarta.xml.bind.JAXBException;
 import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXException;
 import ru.customs.commonaggregatetypes._5_22.RFOrganizationFeaturesType;
+import ru.customs.information.commercialfinancedocuments.recyclingdetails._5_23.AttachedDocumentType;
 import ru.customs.information.commercialfinancedocuments.recyclingdetails._5_23.EngineType;
 import ru.customs.information.commercialfinancedocuments.recyclingdetails._5_23.ObjectFactory;
 import ru.customs.information.commercialfinancedocuments.recyclingdetails._5_23.PayerTPOType;
@@ -18,7 +19,9 @@ import ru.customs.ruscommonaggregatetypes._5_22.RUIdentityCardType;
 
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -129,9 +132,9 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			if (address != null) {
 				registrationInput.setText(address.getAddressKindCode());
 				countryCodeInput.setText(address.getCountryCode());
-				countryNameInput.setText(address.getAddressText());
+				countryNameInput.setText(address.getCounryName());
 				regionNameInput.setText(address.getRegion());
-				cityNameInput.setText(address.getCity());
+				townNameInput.setText(address.getTown());
 				streetNameInput.setText(address.getStreetHouse());
 				houseNumberInput.setText(address.getHouse());
 				roomInput.setText(address.getRoom());
@@ -139,7 +142,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			RUIdentityCardType card = payer.getIdentityDoc();
 			if (card != null) {
 				identityCardCodeInput.setText(card.getIdentityCardCode());
-				identityCardNameInput.setText(card.getIdentityCardName());
+				fullIdentityCardNameInput.setText(card.getFullIdentityCardName());
 				identityCardSeriesInput.setText(card.getIdentityCardSeries());
 				identityCardNumberInput.setText(card.getIdentityCardNumber());
 				XMLGregorianCalendar calendar = card.getIdentityCardDate();
@@ -162,9 +165,10 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				udTransportCategoryCodeInput.setText(vehicleType.getTransportCategoryCode());
 				udMarkCodeInput.setText(vehicleType.getMarkCode());
 				udMarkInput.setText(vehicleType.getMark());
-				BigDecimal enginePowerQuantity = vehicleType.getEnginePowerQuanityType();
-				if (enginePowerQuantity != null) {
-					udEngineVolumeQuantityInput.setText(enginePowerQuantity.toPlainString());
+				udModelInput.setText(vehicleType.getModel());
+				BigDecimal engineVolumeQuanity = vehicleType.getEngineVolumeQuanity();
+				if (engineVolumeQuanity != null) {
+					udEngineVolumeQuantityInput.setText(engineVolumeQuanity.toPlainString());
 				}
 				List<EngineType> engines = vehicleType.getEngine();
 				if (!engines.isEmpty()) {
@@ -208,6 +212,55 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			BigDecimal coefficient = util.getCoefficient();
 			if (coefficient != null)
 				payCoefficientInput.setText(coefficient.toPlainString());
+			List<AttachedDocumentType> documents = util.getPresentedDocument();
+			for (int i = 0; i < 5 || documents.size() < i; i++) {
+				if (i == 0) {
+					AttachedDocumentType doc = documents.get(0);
+					doc1KindCodeInput.setText(doc.getDocKindCode());
+					doc1NameInput.setText(doc.getPrDocumentName());
+					doc1NumberInput.setText(doc.getPrDocumentNumber());
+					XMLGregorianCalendar cal = doc.getPrDocumentDate();
+					if (cal != null) {
+						doc1DateInput.setValue(cal.toGregorianCalendar().getTime());
+					}
+				} else if (i == 1) {
+					AttachedDocumentType doc = documents.get(1);
+					doc2KindCodeInput.setText(doc.getDocKindCode());
+					doc2NameInput.setText(doc.getPrDocumentName());
+					doc2NumberInput.setText(doc.getPrDocumentNumber());
+					XMLGregorianCalendar cal = doc.getPrDocumentDate();
+					if (cal != null) {
+						doc2DateInput.setValue(cal.toGregorianCalendar().getTime());
+					}
+				} else if (i == 2) {
+					AttachedDocumentType doc = documents.get(2);
+					doc3KindCodeInput.setText(doc.getDocKindCode());
+					doc3NameInput.setText(doc.getPrDocumentName());
+					doc3NumberInput.setText(doc.getPrDocumentNumber());
+					XMLGregorianCalendar cal = doc.getPrDocumentDate();
+					if (cal != null) {
+						doc3DateInput.setValue(cal.toGregorianCalendar().getTime());
+					}
+				} else if (i == 3) {
+					AttachedDocumentType doc = documents.get(3);
+					doc4KindCodeInput.setText(doc.getDocKindCode());
+					doc4NameInput.setText(doc.getPrDocumentName());
+					doc4NumberInput.setText(doc.getPrDocumentNumber());
+					XMLGregorianCalendar cal = doc.getPrDocumentDate();
+					if (cal != null) {
+						doc4DateInput.setValue(cal.toGregorianCalendar().getTime());
+					}
+				} else if (i == 4) {
+					AttachedDocumentType doc = documents.get(4);
+					doc5KindCodeInput.setText(doc.getDocKindCode());
+					doc5NameInput.setText(doc.getPrDocumentName());
+					doc5NumberInput.setText(doc.getPrDocumentNumber());
+					XMLGregorianCalendar cal = doc.getPrDocumentDate();
+					if (cal != null) {
+						doc5DateInput.setValue(cal.toGregorianCalendar().getTime());
+					}
+				}
+			}
 		}
 		surNameInput.setText(data.getPayer().get(0).getPerson().getPersonSurname());
 	}
@@ -249,7 +302,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		address.setCountryCode(countryCodeInput.getText());
 		address.setCounryName(countryNameInput.getText());
 		address.setRegion(regionNameInput.getText());
-		address.setCity(cityNameInput.getText());
+		address.setTown(townNameInput.getText());
 		address.setStreetHouse(streetNameInput.getText());
 		address.setHouse(houseNumberInput.getText());
 		address.setRoom(roomInput.getText());
@@ -259,7 +312,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		if (identity == null)
 			identity = new RUIdentityCardType();
 		identity.setIdentityCardCode(identityCardCodeInput.getText());
-		identity.setIdentityCardName(identityCardNameInput.getText());
+		identity.setFullIdentityCardName(fullIdentityCardNameInput.getText());
 		identity.setIdentityCardSeries(identityCardSeriesInput.getText());
 		identity.setIdentityCardNumber(identityCardNumberInput.getText());
 		{
@@ -346,5 +399,31 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				BigDecimal.ZERO : new BigDecimal(payDutyTaxFeeRateInput.getText()));
 		utilDetails.setCoefficient(StringUtils.isEmpty(payCoefficientInput.getText()) ?
 				BigDecimal.ZERO : new BigDecimal(payCoefficientInput.getText()));
+
+		List<AttachedDocumentType> newDocuments = new ArrayList<>();
+		fillDoc(newDocuments, doc1KindCodeInput, doc1NameInput, doc1NumberInput, doc1DateInput);
+		fillDoc(newDocuments, doc2KindCodeInput, doc2NameInput, doc2NumberInput, doc2DateInput);
+		fillDoc(newDocuments, doc3KindCodeInput, doc3NameInput, doc3NumberInput, doc3DateInput);
+		fillDoc(newDocuments, doc4KindCodeInput, doc4NameInput, doc4NumberInput, doc4DateInput);
+		fillDoc(newDocuments, doc5KindCodeInput, doc5NameInput, doc5NumberInput, doc5DateInput);
+		utilDetails.getPresentedDocument().clear();
+		utilDetails.getPresentedDocument().addAll(newDocuments);
+	}
+
+	private void fillDoc(List<AttachedDocumentType> newDocuments, JTextField doc5KindCodeInput, JTextField doc5NameInput, JTextField doc5NumberInput, JFormattedTextField doc5DateInput) throws DatatypeConfigurationException {
+		if (StringUtils.isNotEmpty(doc5KindCodeInput.getText())) {
+			AttachedDocumentType doc = new AttachedDocumentType();
+			doc.setDocKindCode(doc5KindCodeInput.getText());
+			doc.setPrDocumentName(doc5NameInput.getText());
+			doc.setPrDocumentNumber(doc5NumberInput.getText());
+			Date d = (Date) doc5DateInput.getValue();
+			if (d != null) {
+				GregorianCalendar calendar = new GregorianCalendar();
+				calendar.setTime(d);
+				XMLGregorianCalendar d2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
+				doc.setPrDocumentDate(d2);
+			}
+			newDocuments.add(doc);
+		}
 	}
 }

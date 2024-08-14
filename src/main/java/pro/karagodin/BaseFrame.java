@@ -1,8 +1,6 @@
 package pro.karagodin;
 
-import javax.swing.InputVerifier;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -22,8 +20,8 @@ import java.text.SimpleDateFormat;
 public abstract class BaseFrame extends JFrame implements ActionListener {
 	private static final Font appFont = new Font("Arial", Font.PLAIN, 15);
 
-	protected final JButton save = new JButton("Сохранить");
-	protected final JButton open = new JButton("Открыть");
+	protected final JButton save = new JButton("Сохранить Zip");
+	protected final JButton open = new JButton("Открыть XML");
 
 	protected final JTextField surNameInput = new JTextField();
 	protected final JTextField nameInput = new JTextField();
@@ -55,12 +53,12 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField countryCodeInput = new JTextField();
 	protected final JTextField countryNameInput = new JTextField();
 	protected final JTextField regionNameInput = new JTextField();
-	protected final JTextField cityNameInput = new JTextField();
+	protected final JTextField townNameInput = new JTextField();
 	protected final JTextField streetNameInput = new JTextField();
 	protected final JTextField houseNumberInput = new JTextField();
 	protected final JTextField roomInput = new JTextField();
 	protected final JTextField identityCardCodeInput = new JTextField();
-	protected final JTextField identityCardNameInput = new JTextField();
+	protected final JTextField fullIdentityCardNameInput = new JTextField();
 	protected final JTextField identityCardSeriesInput = new JTextField();
 	protected final JTextField identityCardNumberInput = new JTextField();
 	protected final JFormattedTextField identityCardDateInput;
@@ -103,11 +101,60 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	}
 	protected final JTextField payDutyTaxFeeRateInput = new JTextField();
 	protected final JTextField payCoefficientInput = new JTextField();
-
+	protected final JTextField doc1KindCodeInput = new JTextField();
+	protected final JTextField doc1NameInput = new JTextField();
+	protected final JTextField doc1NumberInput = new JTextField();
+	protected final JFormattedTextField doc1DateInput;
+	{
+		DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+		DateFormatter df = new DateFormatter(format);
+		doc1DateInput = new JFormattedTextField(df);
+	}
+	protected final JTextField doc2KindCodeInput = new JTextField();
+	protected final JTextField doc2NameInput = new JTextField();
+	protected final JTextField doc2NumberInput = new JTextField();
+	protected final JFormattedTextField doc2DateInput;
+	{
+		DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+		DateFormatter df = new DateFormatter(format);
+		doc2DateInput = new JFormattedTextField(df);
+	}
+	protected final JTextField doc3KindCodeInput = new JTextField();
+	protected final JTextField doc3NameInput = new JTextField();
+	protected final JTextField doc3NumberInput = new JTextField();
+	protected final JFormattedTextField doc3DateInput;
+	{
+		DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+		DateFormatter df = new DateFormatter(format);
+		doc3DateInput = new JFormattedTextField(df);
+	}
+	protected final JTextField doc4KindCodeInput = new JTextField();
+	protected final JTextField doc4NameInput = new JTextField();
+	protected final JTextField doc4NumberInput = new JTextField();
+	protected final JFormattedTextField doc4DateInput;
+	{
+		DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+		DateFormatter df = new DateFormatter(format);
+		doc4DateInput = new JFormattedTextField(df);
+	}
+	protected final JTextField doc5KindCodeInput = new JTextField();
+	protected final JTextField doc5NameInput = new JTextField();
+	protected final JTextField doc5NumberInput = new JTextField();
+	protected final JFormattedTextField doc5DateInput;
+	{
+		DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+		DateFormatter df = new DateFormatter(format);
+		doc5DateInput = new JFormattedTextField(df);
+	}
+	protected final JTextField brokerSurNameInput = new JTextField();
+	protected final JTextField brokerNameInput = new JTextField();
+	protected final JTextField brokerMiddleNameInput = new JTextField();
+	protected final JTextField brokerEmailInput = new JTextField();
+	protected final JTextField brokerPhoneInput = new JTextField();
 
 	public BaseFrame() {
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		setSize(900,1000);
+		setSize(1600,1000);
 		setLayout(null);
 		setResizable(false);
 		setLocationRelativeTo(null);
@@ -115,14 +162,14 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		Container c = getContentPane();
 
 		open.setFont(appFont);
-		open.setSize(120, 20);
-		open.setLocation(650, 0);
+		open.setSize(150, 20);
+		open.setLocation(0, 880);
 		open.addActionListener(this);
 		c.add(open);
 
 		save.setFont(appFont);
-		save.setSize(120, 20);
-		save.setLocation(650, 20);
+		save.setSize(150, 20);
+		save.setLocation(150, 880);
 		save.addActionListener(this);
 		c.add(save);
 
@@ -145,7 +192,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(new JLabel("Наименование региона"), 5, 140);
 		addComponentToFrame(regionNameInput, 250, 140);
 		addComponentToFrame(new JLabel("Наименование города"), 5, 160);
-		addComponentToFrame(cityNameInput, 250, 160);
+		addComponentToFrame(townNameInput, 250, 160);
 		addComponentToFrame(new JLabel("Наименование улицы"), 5, 180);
 		addComponentToFrame(streetNameInput, 250, 180);
 		addComponentToFrame(new JLabel("Номер дома"), 5, 200);
@@ -155,7 +202,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(new JLabel("Код документа УЛ"), 5, 240);
 		addComponentToFrame(identityCardCodeInput, 250, 240);
 		addComponentToFrame(new JLabel("Наименование документа УЛ"), 5, 260);
-		addComponentToFrame(identityCardNameInput, 250, 260);
+		addComponentToFrame(fullIdentityCardNameInput, 250, 260);
 		addComponentToFrame(new JLabel("Серия документа УЛ"), 5, 280);
 		addComponentToFrame(identityCardSeriesInput, 250, 280);
 		addComponentToFrame(new JLabel("Номер документа УЛ"), 5, 300);
@@ -212,6 +259,64 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(payDutyTaxFeeRateInput, 250, 820);
 		addComponentToFrame(new JLabel("Коэффициент"), 5, 840);
 		addComponentToFrame(payCoefficientInput, 250, 840);
+
+		//Раздел 4
+		addComponentToFrame(new JLabel("Документ 1. Код"), 800, 0);
+		addComponentToFrame(doc1KindCodeInput, 1050, 0);
+		addComponentToFrame(new JLabel("Документ 1. Наименование"), 800, 20);
+		addComponentToFrame(doc1NameInput, 1050, 20);
+		addComponentToFrame(new JLabel("Документ 1. Номер"), 800, 40);
+		addComponentToFrame(doc1NumberInput, 1050, 40);
+		addComponentToFrame(new JLabel("Документ 1. Дата"), 800, 60);
+		addComponentToFrame(doc1DateInput, 1050, 60);
+
+		addComponentToFrame(new JLabel("Документ 2. Код"), 800, 80);
+		addComponentToFrame(doc2KindCodeInput, 1050, 80);
+		addComponentToFrame(new JLabel("Документ 2. Наименование"), 800, 100);
+		addComponentToFrame(doc2NameInput, 1050, 100);
+		addComponentToFrame(new JLabel("Документ 2. Номер"), 800, 120);
+		addComponentToFrame(doc2NumberInput, 1050, 120);
+		addComponentToFrame(new JLabel("Документ 2. Дата"), 800, 140);
+		addComponentToFrame(doc2DateInput, 1050, 140);
+
+		addComponentToFrame(new JLabel("Документ 3. Код"), 800, 160);
+		addComponentToFrame(doc3KindCodeInput, 1050, 160);
+		addComponentToFrame(new JLabel("Документ 3. Наименование"), 800, 180);
+		addComponentToFrame(doc3NameInput, 1050, 180);
+		addComponentToFrame(new JLabel("Документ 3. Номер"), 800, 200);
+		addComponentToFrame(doc3NumberInput, 1050, 200);
+		addComponentToFrame(new JLabel("Документ 3. Дата"), 800, 220);
+		addComponentToFrame(doc3DateInput, 1050, 220);
+
+		addComponentToFrame(new JLabel("Документ 4. Код"), 800, 240);
+		addComponentToFrame(doc4KindCodeInput, 1050, 240);
+		addComponentToFrame(new JLabel("Документ 4. Наименование"), 800, 260);
+		addComponentToFrame(doc4NameInput, 1050, 260);
+		addComponentToFrame(new JLabel("Документ 4. Номер"), 800, 280);
+		addComponentToFrame(doc4NumberInput, 1050, 280);
+		addComponentToFrame(new JLabel("Документ 4. Дата"), 800, 300);
+		addComponentToFrame(doc4DateInput, 1050, 300);
+
+		addComponentToFrame(new JLabel("Документ 5. Код"), 800, 320);
+		addComponentToFrame(doc5KindCodeInput, 1050, 320);
+		addComponentToFrame(new JLabel("Документ 5. Наименование"), 800, 340);
+		addComponentToFrame(doc5NameInput, 1050, 340);
+		addComponentToFrame(new JLabel("Документ 5. Номер"), 800, 360);
+		addComponentToFrame(doc5NumberInput, 1050, 360);
+		addComponentToFrame(new JLabel("Документ 5. Дата"), 800, 380);
+		addComponentToFrame(doc5DateInput, 1050, 380);
+
+		//Раздел 5
+		addComponentToFrame(new JLabel("Фамилия представителя"), 800, 420);
+		addComponentToFrame(brokerSurNameInput, 1050, 420);
+		addComponentToFrame(new JLabel("Имя представителя"), 800, 440);
+		addComponentToFrame(brokerNameInput, 1050, 440);
+		addComponentToFrame(new JLabel("Отчество представителя"), 800, 460);
+		addComponentToFrame(brokerMiddleNameInput, 1050, 460);
+		addComponentToFrame(new JLabel("Контактный e-mail"), 800, 480);
+		addComponentToFrame(brokerEmailInput, 1050, 480);
+		addComponentToFrame(new JLabel("Контактный номер телефона"), 800, 500);
+		addComponentToFrame(brokerPhoneInput, 1050, 500);
 	}
 
 	private void addComponentToFrame(Component c, int x, int y) {
