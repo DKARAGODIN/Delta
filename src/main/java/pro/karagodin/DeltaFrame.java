@@ -2,8 +2,11 @@ package pro.karagodin;
 
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXException;
+import ru.customs.commonaggregatetypes._5_22.PersonBaseType;
+import ru.customs.commonaggregatetypes._5_22.PersonSignatureType;
 import ru.customs.commonaggregatetypes._5_22.RFOrganizationFeaturesType;
 import ru.customs.information.commercialfinancedocuments.recyclingdetails._5_23.AttachedDocumentType;
 import ru.customs.information.commercialfinancedocuments.recyclingdetails._5_23.EngineType;
@@ -28,11 +31,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.transform.stream.StreamSource;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
-import java.nio.file.Files;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -54,7 +57,11 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			if (event.getSource() == open) {
 				openFile();
 			} else if (event.getSource() == save) {
-				saveFile();
+				if (isInputValid()) {
+					saveFile();
+				} else {
+					throw new RuntimeException("Форма не прошла валидацию");
+				}
 			}
 		} catch (Exception e) {
 			List<String> messages = new ArrayList<>();
@@ -81,22 +88,19 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			a.setEditable(false);
 			a.setText(text);
 			d.add(a);
-			d.setSize(500, 500);
+			d.setSize(750, 750);
 			d.setLocationRelativeTo(null);
 			d.setVisible(true);
 		}
 	}
 
-	private void saveFile() throws JAXBException, DatatypeConfigurationException, IOException {
+	private void saveFile() throws JAXBException, DatatypeConfigurationException {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Сохранить файл");
 		if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			fillDataFromFields();
-			OfficeUtils.createDoc(data);
-			OfficeUtils.createCalc(data);
-			File file = fileChooser.getSelectedFile();
 			JAXBElement<RecyclingDetailsType> element = new ObjectFactory().createRecyclingDetails(data);
-			XmlUtils.marshall(element, file);
+			XmlUtils.marshall(element, fileChooser.getSelectedFile());
 		}
 	}
 
@@ -106,11 +110,13 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		fileChooser.setAcceptAllFileFilterUsed(false);
 		if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-			String xml = Files.readString(fileChooser.getSelectedFile().toPath());
+			BOMInputStream bis = BOMInputStream.builder().setInputStream(new FileInputStream(fileChooser.getSelectedFile())).get();
+			String xml = new String(bis.readAllBytes());
 			XmlUtils.validate(xml);
 			data = XmlUtils.unMarshall(new StreamSource(new StringReader(xml)), RecyclingDetailsType.class).getValue();
 
 			fillFieldsFromData();
+			runAllCheckers();
 		}
 	}
 
@@ -130,7 +136,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			}
 			RUAddressType address = payer.getTPOAddress();
 			if (address != null) {
-				registrationInput.setText(address.getAddressKindCode());
+				registrationInput.setSelectedItem(address.getAddressKindCode());
 				countryCodeInput.setText(address.getCountryCode());
 				countryNameInput.setText(address.getCounryName());
 				regionNameInput.setText(address.getRegion());
@@ -158,7 +164,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		if (!utils.isEmpty()) {
 			UtilCollDetailsType util = utils.get(0);
 			udVehicleEPassportIdInput.setText(util.getVehicleEPassportId());
-			udSignInput.setText(util.getSign());
+			udSignInput.setSelectedItem(util.getSign());
 			udTransportKindCodeInput.setText(util.getTransportKindCode());
 			VehicleType vehicleType = util.getVehicle();
 			if (vehicleType != null) {
@@ -213,7 +219,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			if (coefficient != null)
 				payCoefficientInput.setText(coefficient.toPlainString());
 			List<AttachedDocumentType> documents = util.getPresentedDocument();
-			for (int i = 0; i < 5 || documents.size() < i; i++) {
+			for (int i = 0; i < 5 && i < documents.size(); i++) {
 				if (i == 0) {
 					AttachedDocumentType doc = documents.get(0);
 					doc1KindCodeInput.setText(doc.getDocKindCode());
@@ -272,6 +278,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			data.setDocumentID(UUID.randomUUID().toString());
 			data.setDocType(BigDecimal.ONE);
 		}
+
 		List<PayerTPOType> payers = data.getPayer();
 		PayerTPOType payer;
 		if (payers.isEmpty()) {
@@ -286,35 +293,56 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		}
 		personType.setPersonSurname(surNameInput.getText());
 		personType.setPersonName(nameInput.getText());
-		personType.setPersonMiddleName(middleNameInput.getText());
+		if (StringUtils.isNotEmpty(middleNameInput.getText()))
+			personType.setPersonMiddleName(middleNameInput.getText());
 		payer.setPerson(personType);
+
+		if (data.getCustomsPersonName() == null && data.getApproverPerson() == null) {
+			PersonSignatureType pst = new PersonSignatureType();
+			pst.setPersonSurname(surNameInput.getText());
+			pst.setPersonName(nameInput.getText());
+			data.setApproverPerson(pst);
+		}
 
 		RFOrganizationFeaturesType rfOrganizationFeaturesType = payer.getRFOrganizationFeatures();
 		if (rfOrganizationFeaturesType == null)
 			rfOrganizationFeaturesType = new RFOrganizationFeaturesType();
-		rfOrganizationFeaturesType.setINN(innInput.getText());
+		if (StringUtils.isNotEmpty(innInput.getText()))
+			rfOrganizationFeaturesType.setINN(innInput.getText());
 		payer.setRFOrganizationFeatures(rfOrganizationFeaturesType);
 
 		RUAddressType address = payer.getTPOAddress();
 		if (address == null)
 			address = new RUAddressType();
-		address.setAddressKindCode(registrationInput.getText());
-		address.setCountryCode(countryCodeInput.getText());
-		address.setCounryName(countryNameInput.getText());
-		address.setRegion(regionNameInput.getText());
-		address.setTown(townNameInput.getText());
-		address.setStreetHouse(streetNameInput.getText());
-		address.setHouse(houseNumberInput.getText());
-		address.setRoom(roomInput.getText());
+		if (registrationInput.getSelectedItem() != null)
+			address.setAddressKindCode((String) registrationInput.getSelectedItem());
+		if (StringUtils.isNotEmpty(countryCodeInput.getText()))
+			address.setCountryCode(countryCodeInput.getText());
+		if (StringUtils.isNotEmpty(countryNameInput.getText()))
+			address.setCounryName(countryNameInput.getText());
+		if (StringUtils.isNotEmpty(regionNameInput.getText()))
+			address.setRegion(regionNameInput.getText());
+		if (StringUtils.isNotEmpty(townNameInput.getText()))
+			address.setTown(townNameInput.getText());
+		if (StringUtils.isNotEmpty(streetNameInput.getText()))
+			address.setStreetHouse(streetNameInput.getText());
+		if (StringUtils.isNotEmpty(houseNumberInput.getText()))
+			address.setHouse(houseNumberInput.getText());
+		if (StringUtils.isNotEmpty(roomInput.getText()))
+			address.setRoom(roomInput.getText());
 		payer.setTPOAddress(address);
 
 		RUIdentityCardType identity = payer.getIdentityDoc();
 		if (identity == null)
 			identity = new RUIdentityCardType();
-		identity.setIdentityCardCode(identityCardCodeInput.getText());
-		identity.setFullIdentityCardName(fullIdentityCardNameInput.getText());
-		identity.setIdentityCardSeries(identityCardSeriesInput.getText());
-		identity.setIdentityCardNumber(identityCardNumberInput.getText());
+		if (StringUtils.isNotEmpty(identityCardCodeInput.getText()))
+			identity.setIdentityCardCode(identityCardCodeInput.getText());
+		if (StringUtils.isNotEmpty(fullIdentityCardNameInput.getText()))
+			identity.setFullIdentityCardName(fullIdentityCardNameInput.getText());
+		if (StringUtils.isNotEmpty(identityCardSeriesInput.getText()))
+			identity.setIdentityCardSeries(identityCardSeriesInput.getText());
+		if (StringUtils.isNotEmpty(identityCardNumberInput.getText()))
+			identity.setIdentityCardNumber(identityCardNumberInput.getText());
 		{
 			Date d = (Date) identityCardDateInput.getValue();
 			if (d != null) {
@@ -324,9 +352,12 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				identity.setDocValidityDate(d2);
 			}
 		}
-		identity.setOrganizationName(identityOrganisationNameInput.getText());
-		identity.setIssuerCode(identityIssuerCodeInput.getText());
-		identity.setCountryCode(identityCountryCodeInput.getText());
+		if (StringUtils.isNotEmpty(identityOrganisationNameInput.getText()))
+			identity.setOrganizationName(identityOrganisationNameInput.getText());
+		if (StringUtils.isNotEmpty(identityIssuerCodeInput.getText()))
+			identity.setIssuerCode(identityIssuerCodeInput.getText());
+		if (StringUtils.isNotEmpty(identityCountryCodeInput.getText()))
+			identity.setCountryCode(identityCountryCodeInput.getText());
 		payer.setIdentityDoc(identity);
 
 		List<UtilCollDetailsType> utilCollDetailsTypes = data.getUtilCollDetails();
@@ -337,21 +368,30 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		} else {
 			utilDetails = utilCollDetailsTypes.get(0);
 		}
-		utilDetails.setVehicleEPassportId(udVehicleEPassportIdInput.getText());
-		utilDetails.setSign(udSignInput.getText());
-		utilDetails.setTransportKindCode(udTransportKindCodeInput.getText());
+
+		utilDetails.setGoodsRecNumber(BigInteger.ONE);
+
+		if (StringUtils.isNotEmpty(udVehicleEPassportIdInput.getText()))
+			utilDetails.setVehicleEPassportId(udVehicleEPassportIdInput.getText());
+		utilDetails.setSign((String) udSignInput.getSelectedItem());
+		if (StringUtils.isNotEmpty(udTransportKindCodeInput.getText()))
+			utilDetails.setTransportKindCode(udTransportKindCodeInput.getText());
 
 		VehicleType vehicleType = utilDetails.getVehicle();
 		if (vehicleType == null) {
 			vehicleType = new VehicleType();
+			utilDetails.setVehicle(vehicleType);
 		}
-		vehicleType.setTransportCategoryCode(udTransportCategoryCodeInput.getText());
-		vehicleType.setMarkCode(udMarkCodeInput.getText());
-		vehicleType.setMark(udMarkInput.getText());
-		vehicleType.setModel(udModelInput.getText());
-		vehicleType.setEngineVolumeQuanity(StringUtils.isEmpty(udEngineVolumeQuantityInput.getText()) ?
-				BigDecimal.ZERO : new BigDecimal(udEngineVolumeQuantityInput.getText()));
-		utilDetails.setVehicle(vehicleType);
+		if (StringUtils.isNotEmpty(udTransportCategoryCodeInput.getText()))
+			vehicleType.setTransportCategoryCode(udTransportCategoryCodeInput.getText());
+		if (StringUtils.isNotEmpty(udMarkCodeInput.getText()))
+			vehicleType.setMarkCode(udMarkCodeInput.getText());
+		if (StringUtils.isNotEmpty(udMarkInput.getText()))
+			vehicleType.setMark(udMarkInput.getText());
+		if (StringUtils.isNotEmpty(udModelInput.getText()))
+			vehicleType.setModel(udModelInput.getText());
+		if (StringUtils.isNotEmpty(udEngineVolumeQuantityInput.getText()))
+			vehicleType.setEngineVolumeQuanity(new BigDecimal(udEngineVolumeQuantityInput.getText()));
 
 		List<EngineType> engines = vehicleType.getEngine();
 		EngineType engine;
@@ -361,13 +401,16 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		} else {
 			engine = engines.get(0);
 		}
-		engine.setEngineModeCode(udEngineModelCodeInput.getText());
-		engine.setEngineModeName(udEngineModelNameInput.getText());
-		engine.setEngineModel(udEngineModelInput.getText());
-		engine.setEnginePowerKvtQuanity(StringUtils.isEmpty(udEnginePowerKvtInput.getText()) ?
-				BigDecimal.ZERO : new BigDecimal(udEnginePowerKvtInput.getText()));
-		vehicleType.setTotalWeight(StringUtils.isEmpty(udTotalWeightInput.getText()) ?
-				BigDecimal.ZERO : new BigDecimal(udTotalWeightInput.getText()));
+		if (StringUtils.isNotEmpty(udEngineModelCodeInput.getText()))
+			engine.setEngineModeCode(udEngineModelCodeInput.getText());
+		if (StringUtils.isNotEmpty(udEngineModelNameInput.getText()))
+			engine.setEngineModeName(udEngineModelNameInput.getText());
+		if (StringUtils.isNotEmpty(udEngineModelInput.getText()))
+			engine.setEngineModel(udEngineModelInput.getText());
+		if (StringUtils.isNotEmpty(udEnginePowerKvtInput.getText()))
+			engine.setEnginePowerKvtQuanity(new BigDecimal(udEnginePowerKvtInput.getText()));
+		if (StringUtils.isNotEmpty(udTotalWeightInput.getText()))
+			vehicleType.setTotalWeight(new BigDecimal(udTotalWeightInput.getText()));
 		{
 			Date d = (Date) udManufactureDateInput.getValue();
 			if (d != null) {
@@ -379,13 +422,14 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				vehicleType.setVehicleProdDate(vehicleProdDateType);
 			}
 		}
-		utilDetails.setVINID(udVinInput.getText());
-		utilDetails.setImportCustomsDuty(StringUtils.isEmpty(payImportCustomsDutyInput.getText()) ?
-				BigDecimal.ZERO : new BigDecimal(payImportCustomsDutyInput.getText()));
-		utilDetails.setExcise(StringUtils.isEmpty(payExciseInput.getText()) ?
-				BigDecimal.ZERO : new BigDecimal(payExciseInput.getText()));
-		utilDetails.setVAT(StringUtils.isEmpty(payVatInput.getText()) ?
-				BigDecimal.ZERO : new BigDecimal(payVatInput.getText()));
+		if (StringUtils.isNotEmpty(udVinInput.getText()))
+			utilDetails.setVINID(udVinInput.getText());
+		if (StringUtils.isNotEmpty(payImportCustomsDutyInput.getText()))
+			utilDetails.setImportCustomsDuty(new BigDecimal(payImportCustomsDutyInput.getText()));
+		if (StringUtils.isNotEmpty(payExciseInput.getText()))
+			utilDetails.setExcise(new BigDecimal(payExciseInput.getText()));
+		if (StringUtils.isNotEmpty(payVatInput.getText()))
+			utilDetails.setVAT(new BigDecimal(payVatInput.getText()));
 		{
 			Date d = (Date) payBorderCrossingDateInput.getValue();
 			if (d != null) {
@@ -395,10 +439,10 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				utilDetails.setBorderCrossingDate(d2);
 			}
 		}
-		utilDetails.setDutyTaxFeeRateValue(StringUtils.isEmpty(payDutyTaxFeeRateInput.getText()) ?
-				BigDecimal.ZERO : new BigDecimal(payDutyTaxFeeRateInput.getText()));
-		utilDetails.setCoefficient(StringUtils.isEmpty(payCoefficientInput.getText()) ?
-				BigDecimal.ZERO : new BigDecimal(payCoefficientInput.getText()));
+		if (StringUtils.isNotEmpty(payDutyTaxFeeRateInput.getText()))
+			utilDetails.setDutyTaxFeeRateValue(new BigDecimal(payDutyTaxFeeRateInput.getText()));
+		if (StringUtils.isNotEmpty(payCoefficientInput.getText()))
+			utilDetails.setCoefficient(new BigDecimal(payCoefficientInput.getText()));
 
 		List<AttachedDocumentType> newDocuments = new ArrayList<>();
 		fillDoc(newDocuments, doc1KindCodeInput, doc1NameInput, doc1NumberInput, doc1DateInput);

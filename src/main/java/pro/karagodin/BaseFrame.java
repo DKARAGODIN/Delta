@@ -1,6 +1,9 @@
 package pro.karagodin;
 
+import org.apache.commons.lang3.StringUtils;
+
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -13,43 +16,31 @@ import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 
 public abstract class BaseFrame extends JFrame implements ActionListener {
 	private static final Font appFont = new Font("Arial", Font.PLAIN, 15);
 
-	protected final JButton save = new JButton("Сохранить Zip");
+	protected final JButton save = new JButton("Сохранить XML");
 	protected final JButton open = new JButton("Открыть XML");
 
 	protected final JTextField surNameInput = new JTextField();
+	protected final JLabel surNameLabel = new JLabel();
+
 	protected final JTextField nameInput = new JTextField();
+	protected final JLabel nameLabel = new JLabel();
+
 	protected final JTextField middleNameInput = new JTextField();
+
 	protected final JTextField innInput = new JTextField();
 	protected final JLabel innLabel = new JLabel();
-	{
-		innInput.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyReleased(KeyEvent e) {
-				String value = innInput.getText();
-				if (value != null) {
-					int l = value.length();
-					if (l == 10 || l == 12) {
-						innLabel.setText("");
-					} else {
-						innLabel.setText("ИНН должен быть 10 или 12 символов");
-					}
-					for (char c : value.toCharArray()) {
-						if (!Character.isDigit(c)) {
-							innLabel.setText("ИНН должен состоять только из цифр");
-						}
-					}
-				}
-			}
-		});
-	}
-	protected final JTextField registrationInput = new JTextField();
+
+	protected final JComboBox<String> registrationInput = new JComboBox<>();
 	protected final JTextField countryCodeInput = new JTextField();
 	protected final JTextField countryNameInput = new JTextField();
 	protected final JTextField regionNameInput = new JTextField();
@@ -71,7 +62,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField identityIssuerCodeInput = new JTextField();
 	protected final JTextField identityCountryCodeInput = new JTextField();
 	protected final JTextField udVehicleEPassportIdInput = new JTextField();
-	protected final JTextField udSignInput = new JTextField();
+	protected final JComboBox<String> udSignInput = new JComboBox<>();
 	protected final JTextField udTransportKindCodeInput = new JTextField();
 	protected final JTextField udTransportCategoryCodeInput = new JTextField();
 	protected final JTextField udMarkCodeInput = new JTextField();
@@ -152,6 +143,9 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField brokerEmailInput = new JTextField();
 	protected final JTextField brokerPhoneInput = new JTextField();
 
+	private final List<JLabel> labels;
+	private final List<Runnable> checkers;
+
 	public BaseFrame() {
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setSize(1600,1000);
@@ -159,31 +153,105 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		setResizable(false);
 		setLocationRelativeTo(null);
 
-		Container c = getContentPane();
+		Container container = getContentPane();
 
 		open.setFont(appFont);
 		open.setSize(150, 20);
 		open.setLocation(0, 880);
 		open.addActionListener(this);
-		c.add(open);
+		container.add(open);
 
 		save.setFont(appFont);
 		save.setSize(150, 20);
 		save.setLocation(150, 880);
 		save.addActionListener(this);
-		c.add(save);
+		container.add(save);
 
+		// Фамилия плательщика
 		addComponentToFrame(new JLabel("Фамилия плательщика"), 5, 0);
 		addComponentToFrame(surNameInput, 250, 0);
+		addComponentToFrame(surNameLabel, 500, 0);
+		surNameLabel.setSize(300, 20);
+		surNameLabel.setText("Обязательное поле");
+		Runnable surNameChecker = () -> {
+			String value = surNameInput.getText();
+			if (StringUtils.isEmpty(value)) {
+				surNameLabel.setText("Обязательное поле");
+			} else {
+				surNameLabel.setText("");
+			}
+		};
+		surNameInput.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				surNameChecker.run();
+			}
+		});
+
+		//Имя плательщика
 		addComponentToFrame(new JLabel("Имя плательщика"), 5, 20);
 		addComponentToFrame(nameInput, 250, 20);
+		addComponentToFrame(nameLabel, 500, 20);
+		nameLabel.setSize(300, 20);
+		nameLabel.setText("Обязательное поле");
+		Runnable nameChecker = () -> {
+			String value = nameInput.getText();
+			if (StringUtils.isEmpty(value)) {
+				nameLabel.setText("Обязательное поле");
+			} else {
+				nameLabel.setText("");
+			}
+		};
+		nameInput.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				nameChecker.run();
+			}
+		});
+
+		//Отчество плательщика
 		addComponentToFrame(new JLabel("Отчество плательщика"), 5, 40);
 		addComponentToFrame(middleNameInput, 250, 40);
+
+		//ИНН
 		addComponentToFrame(new JLabel("ИНН"), 5, 60);
 		addComponentToFrame(innInput, 250, 60);
 		addComponentToFrame(innLabel, 500, 60);
 		innLabel.setSize(300, 20);
-		addComponentToFrame(new JLabel("Признак постоянной регистрации"), 5, 80);
+		Runnable innChecker = () -> {
+			String value = innInput.getText();
+			if (StringUtils.isEmpty(value)) {
+				innLabel.setText("");
+			} else {
+				int l = value.length();
+				if (l == 10 || l == 12) {
+					innLabel.setText("");
+				} else {
+					innLabel.setText("ИНН должен быть 10 или 12 символов");
+				}
+				for (char c : value.toCharArray()) {
+					if (!Character.isDigit(c)) {
+						innLabel.setText("ИНН должен состоять только из цифр");
+					}
+				}
+			}
+		};
+		innInput.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				innChecker.run();
+			}
+		});
+
+		//Признак постоянной регистрации
+		JLabel registrationHeader = new JLabel("Признак постоянной регистрации");
+		registrationHeader.setToolTipText("\"1\" - адрес регистрации; \"2\" - фактический адрес; \"3\" - почтовый адрес");
+		registrationInput.setToolTipText("\"1\" - адрес регистрации; \"2\" - фактический адрес; \"3\" - почтовый адрес");
+		addComponentToFrame(registrationHeader, 5, 80);
+		registrationInput.addItem(null);
+		registrationInput.addItem("1");
+		registrationInput.addItem("2");
+		registrationInput.addItem("3");
 		addComponentToFrame(registrationInput, 250, 80);
 		addComponentToFrame(new JLabel("Код страны"), 5, 100);
 		addComponentToFrame(countryCodeInput, 250, 100);
@@ -220,6 +288,10 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(udVehicleEPassportIdInput, 250, 420);
 		addComponentToFrame(new JLabel("Признак ТС"), 5, 440);
 		addComponentToFrame(udSignInput, 250, 440);
+		udSignInput.setToolTipText("«К» - колесное транспортное средство, «С» - самоходная машина");
+		udSignInput.addItem("К");
+		udSignInput.addItem("С");
+
 		addComponentToFrame(new JLabel("Вид ТС"), 5, 460);
 		addComponentToFrame(udTransportKindCodeInput, 250, 460);
 		addComponentToFrame(new JLabel("Категория ТС"), 5, 480);
@@ -317,6 +389,9 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(brokerEmailInput, 1050, 480);
 		addComponentToFrame(new JLabel("Контактный номер телефона"), 800, 500);
 		addComponentToFrame(brokerPhoneInput, 1050, 500);
+
+		labels = List.of(surNameLabel, nameLabel, innLabel);
+		checkers = List.of(surNameChecker, nameChecker, innChecker);
 	}
 
 	private void addComponentToFrame(Component c, int x, int y) {
@@ -324,5 +399,13 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		c.setSize(250, 20);
 		c.setLocation(x, y);
 		getContentPane().add(c);
+	}
+
+	protected boolean isInputValid() {
+		return labels.stream().allMatch(jl -> StringUtils.isEmpty(jl.getText()));
+	}
+
+	protected void runAllCheckers() {
+		checkers.forEach(Runnable::run);
 	}
 }
