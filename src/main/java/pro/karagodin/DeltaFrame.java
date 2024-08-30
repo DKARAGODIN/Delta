@@ -31,11 +31,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.transform.stream.StreamSource;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -100,7 +102,12 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			fillDataFromFields();
 			JAXBElement<RecyclingDetailsType> element = new ObjectFactory().createRecyclingDetails(data);
-			XmlUtils.marshall(element, fileChooser.getSelectedFile());
+			File f = fileChooser.getSelectedFile();
+			try {
+				XmlUtils.marshall(element, f);
+			} finally {
+				f.delete();
+			}
 		}
 	}
 
