@@ -21,7 +21,6 @@ import java.awt.event.KeyEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
-import java.util.Map;
 
 
 public abstract class BaseFrame extends JFrame implements ActionListener {
@@ -49,7 +48,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField streetNameInput = new JTextField();
 	protected final JTextField houseNumberInput = new JTextField();
 	protected final JTextField roomInput = new JTextField();
-	protected final JTextField identityCardCodeInput = new JTextField();
+	protected final JComboBox<IdentityCardCode> identityCardCodeInput = new JComboBox<>();
 	protected final JTextField fullIdentityCardNameInput = new JTextField();
 	protected final JTextField identityCardSeriesInput = new JTextField();
 	protected final JTextField identityCardNumberInput = new JTextField();
@@ -306,6 +305,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(roomInput, 250, 220);
 		addComponentToFrame(new JLabel("Код документа УЛ"), 5, 240);
 		addComponentToFrame(identityCardCodeInput, 250, 240);
+		identityCardCodeInput.addItem(null);
+		IdentityCardCode.cache.values().forEach(identityCardCodeInput::addItem);
 		addComponentToFrame(new JLabel("Наименование документа УЛ"), 5, 260);
 		addComponentToFrame(fullIdentityCardNameInput, 250, 260);
 		addComponentToFrame(new JLabel("Серия документа УЛ"), 5, 280);

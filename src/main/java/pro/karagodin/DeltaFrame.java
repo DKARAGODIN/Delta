@@ -154,7 +154,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			}
 			RUIdentityCardType card = payer.getIdentityDoc();
 			if (card != null) {
-				identityCardCodeInput.setText(card.getIdentityCardCode());
+				identityCardCodeInput.setSelectedItem(IdentityCardCode.cache.get(card.getIdentityCardCode()));
 				fullIdentityCardNameInput.setText(card.getFullIdentityCardName());
 				identityCardSeriesInput.setText(card.getIdentityCardSeries());
 				identityCardNumberInput.setText(card.getIdentityCardNumber());
@@ -279,12 +279,10 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 	}
 
 	private void fillDataFromFields() throws DatatypeConfigurationException {
-		if (data == null) {
-			data = new RecyclingDetailsType();
-			data.setDocumentModeID("1002048E");
-			data.setDocumentID(UUID.randomUUID().toString());
-			data.setDocType(BigDecimal.ONE);
-		}
+		data = new RecyclingDetailsType();
+		data.setDocumentModeID("1002048E");
+		data.setDocumentID(UUID.randomUUID().toString());
+		data.setDocType(BigDecimal.ONE);
 
 		List<PayerTPOType> payers = data.getPayer();
 		PayerTPOType payer;
@@ -342,8 +340,8 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		RUIdentityCardType identity = payer.getIdentityDoc();
 		if (identity == null)
 			identity = new RUIdentityCardType();
-		if (StringUtils.isNotEmpty(identityCardCodeInput.getText()))
-			identity.setIdentityCardCode(identityCardCodeInput.getText());
+		if (identityCardCodeInput.getSelectedItem() != null)
+			identity.setIdentityCardCode(((IdentityCardCode) identityCardCodeInput.getSelectedItem()).value());
 		if (StringUtils.isNotEmpty(fullIdentityCardNameInput.getText()))
 			identity.setFullIdentityCardName(fullIdentityCardNameInput.getText());
 		if (StringUtils.isNotEmpty(identityCardSeriesInput.getText()))
