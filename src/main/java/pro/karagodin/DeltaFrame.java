@@ -5,7 +5,6 @@ import jakarta.xml.bind.JAXBException;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
 import org.xml.sax.SAXException;
-import ru.customs.commonaggregatetypes._5_22.PersonBaseType;
 import ru.customs.commonaggregatetypes._5_22.PersonSignatureType;
 import ru.customs.commonaggregatetypes._5_22.RFOrganizationFeaturesType;
 import ru.customs.information.commercialfinancedocuments.recyclingdetails._5_23.AttachedDocumentType;
@@ -20,6 +19,7 @@ import ru.customs.information.commercialfinancedocuments.recyclingdetails._5_23.
 import ru.customs.ruscommonaggregatetypes._5_22.RUAddressType;
 import ru.customs.ruscommonaggregatetypes._5_22.RUIdentityCardType;
 
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
@@ -104,8 +104,9 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			File f = fileChooser.getSelectedFile();
 			try {
 				XmlUtils.marshall(element, f);
-			} finally {
+			} catch (JAXBException e) {
 				f.delete();
+				throw e;
 			}
 		}
 	}
@@ -228,7 +229,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			for (int i = 0; i < 5 && i < documents.size(); i++) {
 				if (i == 0) {
 					AttachedDocumentType doc = documents.get(0);
-					doc1KindCodeInput.setText(doc.getDocKindCode());
+					doc1KindCodeInput.setSelectedItem(doc.getDocKindCode());
 					doc1NameInput.setText(doc.getPrDocumentName());
 					doc1NumberInput.setText(doc.getPrDocumentNumber());
 					XMLGregorianCalendar cal = doc.getPrDocumentDate();
@@ -237,7 +238,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 					}
 				} else if (i == 1) {
 					AttachedDocumentType doc = documents.get(1);
-					doc2KindCodeInput.setText(doc.getDocKindCode());
+					doc2KindCodeInput.setSelectedItem(doc.getDocKindCode());
 					doc2NameInput.setText(doc.getPrDocumentName());
 					doc2NumberInput.setText(doc.getPrDocumentNumber());
 					XMLGregorianCalendar cal = doc.getPrDocumentDate();
@@ -246,7 +247,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 					}
 				} else if (i == 2) {
 					AttachedDocumentType doc = documents.get(2);
-					doc3KindCodeInput.setText(doc.getDocKindCode());
+					doc3KindCodeInput.setSelectedItem(doc.getDocKindCode());
 					doc3NameInput.setText(doc.getPrDocumentName());
 					doc3NumberInput.setText(doc.getPrDocumentNumber());
 					XMLGregorianCalendar cal = doc.getPrDocumentDate();
@@ -255,7 +256,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 					}
 				} else if (i == 3) {
 					AttachedDocumentType doc = documents.get(3);
-					doc4KindCodeInput.setText(doc.getDocKindCode());
+					doc4KindCodeInput.setSelectedItem(doc.getDocKindCode());
 					doc4NameInput.setText(doc.getPrDocumentName());
 					doc4NumberInput.setText(doc.getPrDocumentNumber());
 					XMLGregorianCalendar cal = doc.getPrDocumentDate();
@@ -264,7 +265,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 					}
 				} else if (i == 4) {
 					AttachedDocumentType doc = documents.get(4);
-					doc5KindCodeInput.setText(doc.getDocKindCode());
+					doc5KindCodeInput.setSelectedItem(doc.getDocKindCode());
 					doc5NameInput.setText(doc.getPrDocumentName());
 					doc5NumberInput.setText(doc.getPrDocumentNumber());
 					XMLGregorianCalendar cal = doc.getPrDocumentDate();
@@ -460,10 +461,10 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		utilDetails.getPresentedDocument().addAll(newDocuments);
 	}
 
-	private void fillDoc(List<AttachedDocumentType> newDocuments, JTextField doc5KindCodeInput, JTextField doc5NameInput, JTextField doc5NumberInput, JFormattedTextField doc5DateInput) throws DatatypeConfigurationException {
-		if (StringUtils.isNotEmpty(doc5KindCodeInput.getText())) {
+	private void fillDoc(List<AttachedDocumentType> newDocuments, JComboBox<String> docKindCodeInput, JTextField doc5NameInput, JTextField doc5NumberInput, JFormattedTextField doc5DateInput) throws DatatypeConfigurationException {
+		if (StringUtils.isNotEmpty((CharSequence) docKindCodeInput.getSelectedItem())) {
 			AttachedDocumentType doc = new AttachedDocumentType();
-			doc.setDocKindCode(doc5KindCodeInput.getText());
+			doc.setDocKindCode((String) docKindCodeInput.getSelectedItem());
 			doc.setPrDocumentName(doc5NameInput.getText());
 			doc.setPrDocumentNumber(doc5NumberInput.getText());
 			Date d = (Date) doc5DateInput.getValue();

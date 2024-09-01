@@ -14,7 +14,9 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.FocusTraversalPolicy;
 import java.awt.Font;
+import java.awt.ItemSelectable;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.DateFormat;
@@ -91,7 +93,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	}
 	protected final JTextField payDutyTaxFeeRateInput = new JTextField();
 	protected final JTextField payCoefficientInput = new JTextField();
-	protected final JTextField doc1KindCodeInput = new JTextField();
+	protected final JComboBox<String> doc1KindCodeInput = new JComboBox<>();
 	protected final JTextField doc1NameInput = new JTextField();
 	protected final JTextField doc1NumberInput = new JTextField();
 	protected final JFormattedTextField doc1DateInput;
@@ -100,7 +102,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		DateFormatter df = new DateFormatter(format);
 		doc1DateInput = new JFormattedTextField(df);
 	}
-	protected final JTextField doc2KindCodeInput = new JTextField();
+	protected final JComboBox<String> doc2KindCodeInput = new JComboBox<>();
 	protected final JTextField doc2NameInput = new JTextField();
 	protected final JTextField doc2NumberInput = new JTextField();
 	protected final JFormattedTextField doc2DateInput;
@@ -109,7 +111,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		DateFormatter df = new DateFormatter(format);
 		doc2DateInput = new JFormattedTextField(df);
 	}
-	protected final JTextField doc3KindCodeInput = new JTextField();
+	protected final JComboBox<String> doc3KindCodeInput = new JComboBox<>();
 	protected final JTextField doc3NameInput = new JTextField();
 	protected final JTextField doc3NumberInput = new JTextField();
 	protected final JFormattedTextField doc3DateInput;
@@ -118,7 +120,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		DateFormatter df = new DateFormatter(format);
 		doc3DateInput = new JFormattedTextField(df);
 	}
-	protected final JTextField doc4KindCodeInput = new JTextField();
+	protected final JComboBox<String> doc4KindCodeInput = new JComboBox<>();
 	protected final JTextField doc4NameInput = new JTextField();
 	protected final JTextField doc4NumberInput = new JTextField();
 	protected final JFormattedTextField doc4DateInput;
@@ -127,7 +129,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		DateFormatter df = new DateFormatter(format);
 		doc4DateInput = new JFormattedTextField(df);
 	}
-	protected final JTextField doc5KindCodeInput = new JTextField();
+	protected final JComboBox<String> doc5KindCodeInput = new JComboBox<>();
 	protected final JTextField doc5NameInput = new JTextField();
 	protected final JTextField doc5NumberInput = new JTextField();
 	protected final JFormattedTextField doc5DateInput;
@@ -147,7 +149,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 
 	public BaseFrame() {
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		setSize(1600,1000);
+		setSize(1400,920);
 		setLayout(null);
 		setResizable(true);
 		setLocationRelativeTo(null);
@@ -156,13 +158,13 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 
 		open.setFont(appFont);
 		open.setSize(150, 20);
-		open.setLocation(0, 880);
+		open.setLocation( 800, 600);
 		open.addActionListener(this);
 		container.add(open);
 
 		save.setFont(appFont);
 		save.setSize(150, 20);
-		save.setLocation(150, 880);
+		save.setLocation(950, 600);
 		save.addActionListener(this);
 		container.add(save);
 
@@ -334,6 +336,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		//Раздел 4
 		addComponentToFrame(new JLabel("Документ 1. Код"), 800, 0);
 		addComponentToFrame(doc1KindCodeInput, 1050, 0);
+		fillDocumentComponents(doc1KindCodeInput, doc1NameInput, doc1NumberInput, doc1DateInput);
 		addComponentToFrame(new JLabel("Документ 1. Наименование"), 800, 20);
 		addComponentToFrame(doc1NameInput, 1050, 20);
 		addComponentToFrame(new JLabel("Документ 1. Номер"), 800, 40);
@@ -343,6 +346,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 
 		addComponentToFrame(new JLabel("Документ 2. Код"), 800, 80);
 		addComponentToFrame(doc2KindCodeInput, 1050, 80);
+		fillDocumentComponents(doc2KindCodeInput, doc2NameInput, doc2NumberInput, doc2DateInput);
 		addComponentToFrame(new JLabel("Документ 2. Наименование"), 800, 100);
 		addComponentToFrame(doc2NameInput, 1050, 100);
 		addComponentToFrame(new JLabel("Документ 2. Номер"), 800, 120);
@@ -352,6 +356,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 
 		addComponentToFrame(new JLabel("Документ 3. Код"), 800, 160);
 		addComponentToFrame(doc3KindCodeInput, 1050, 160);
+		fillDocumentComponents(doc3KindCodeInput, doc3NameInput, doc3NumberInput, doc3DateInput);
 		addComponentToFrame(new JLabel("Документ 3. Наименование"), 800, 180);
 		addComponentToFrame(doc3NameInput, 1050, 180);
 		addComponentToFrame(new JLabel("Документ 3. Номер"), 800, 200);
@@ -361,6 +366,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 
 		addComponentToFrame(new JLabel("Документ 4. Код"), 800, 240);
 		addComponentToFrame(doc4KindCodeInput, 1050, 240);
+		fillDocumentComponents(doc4KindCodeInput, doc4NameInput, doc4NumberInput, doc4DateInput);
 		addComponentToFrame(new JLabel("Документ 4. Наименование"), 800, 260);
 		addComponentToFrame(doc4NameInput, 1050, 260);
 		addComponentToFrame(new JLabel("Документ 4. Номер"), 800, 280);
@@ -370,6 +376,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 
 		addComponentToFrame(new JLabel("Документ 5. Код"), 800, 320);
 		addComponentToFrame(doc5KindCodeInput, 1050, 320);
+		fillDocumentComponents(doc5KindCodeInput, doc5NameInput, doc5NumberInput, doc5DateInput);
 		addComponentToFrame(new JLabel("Документ 5. Наименование"), 800, 340);
 		addComponentToFrame(doc5NameInput, 1050, 340);
 		addComponentToFrame(new JLabel("Документ 5. Номер"), 800, 360);
@@ -394,6 +401,40 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 
 		container.setFocusTraversalPolicyProvider(true);
 		container.setFocusTraversalPolicy(setUpTraversalPolicy());
+	}
+
+	private void fillDocumentComponents(JComboBox<String> docKindCodeInput, JTextField name, JTextField number, JFormattedTextField date) {
+		docKindCodeInput.addItem("");
+		docKindCodeInput.addItem("03011");
+		docKindCodeInput.addItem("09999");
+		name.setEditable(false);
+		number.setEditable(false);
+		date.setEditable(false);
+		docKindCodeInput.addItemListener(e -> {
+			if (e.getID() == ItemEvent.ITEM_STATE_CHANGED) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					JComboBox<String> cb = (JComboBox<String>) e.getSource();
+					String selectedItem = (String) cb.getSelectedItem();
+					if (StringUtils.isEmpty(selectedItem)) {
+						name.setText(null);
+						number.setText(null);
+						number.setEditable(false);
+						date.setValue(null);
+						date.setEditable(false);
+					} else {
+						if ("03011".equals(selectedItem)) {
+							name.setText("договор (контракт), заключённый при совершении сделки с товарами");
+						} else {
+							name.setText("иные документы");
+						}
+						number.setEditable(true);
+						number.setText(null);
+						date.setEditable(true);
+						date.setText(null);
+					}
+				}
+			}
+		});
 	}
 
 	private FocusTraversalPolicy setUpTraversalPolicy() {
