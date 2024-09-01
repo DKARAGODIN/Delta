@@ -12,12 +12,11 @@ import javax.swing.WindowConstants;
 import javax.swing.text.DateFormatter;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.FocusTraversalPolicy;
 import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -150,7 +149,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		setSize(1600,1000);
 		setLayout(null);
-		setResizable(false);
+		setResizable(true);
 		setLocationRelativeTo(null);
 
 		Container container = getContentPane();
@@ -392,6 +391,130 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 
 		labels = List.of(surNameLabel, nameLabel, innLabel);
 		checkers = List.of(surNameChecker, nameChecker, innChecker);
+
+		container.setFocusTraversalPolicyProvider(true);
+		container.setFocusTraversalPolicy(setUpTraversalPolicy());
+	}
+
+	private FocusTraversalPolicy setUpTraversalPolicy() {
+		FocusTraversalPolicy p = new FocusTraversalPolicy() {
+			private final List<Component> orderedComponents = List.of(
+				surNameInput,
+				nameInput,
+				middleNameInput,
+				innInput,
+				registrationInput,
+				countryCodeInput,
+				countryNameInput,
+				regionNameInput,
+				townNameInput,
+				streetNameInput,
+				houseNumberInput,
+				roomInput,
+				identityCardCodeInput,
+				fullIdentityCardNameInput,
+				identityCardSeriesInput,
+				identityCardNumberInput,
+				identityCardDateInput,
+				identityOrganisationNameInput,
+				identityIssuerCodeInput,
+				identityCountryCodeInput,
+				udVehicleEPassportIdInput,
+				udSignInput,
+				udTransportKindCodeInput,
+				udTransportCategoryCodeInput,
+				udMarkCodeInput,
+				udMarkInput,
+				udModelInput,
+				udEngineVolumeQuantityInput,
+				udEngineModelCodeInput,
+				udEngineModelNameInput,
+				udEngineModelInput,
+				udEnginePowerKvtInput,
+				udTotalWeightInput,
+				udManufactureDateInput,
+				udVinInput,
+				payImportCustomsDutyInput,
+				payExciseInput,
+				payVatInput,
+				payBorderCrossingDateInput,
+				payDutyTaxFeeRateInput,
+				payCoefficientInput,
+				doc1KindCodeInput,
+				doc1NameInput,
+				doc1NumberInput,
+				doc1DateInput,
+				doc2KindCodeInput,
+				doc2NameInput,
+				doc2NumberInput,
+				doc2DateInput,
+				doc3KindCodeInput,
+				doc3NameInput,
+				doc3NumberInput,
+				doc3DateInput,
+				doc4KindCodeInput,
+				doc4NameInput,
+				doc4NumberInput,
+				doc4DateInput,
+				doc5KindCodeInput,
+				doc5NameInput,
+				doc5NumberInput,
+				doc5DateInput,
+				brokerSurNameInput,
+				brokerNameInput,
+				brokerMiddleNameInput,
+				brokerEmailInput,
+				brokerPhoneInput
+			);
+
+			@Override
+			public Component getComponentAfter(Container aContainer, Component aComponent) {
+				Component next = null;
+				boolean found = false;
+				for (Component c : this.orderedComponents) {
+					if (found) {
+						next = c;
+						break;
+					}
+					if (c == aComponent)
+						found = true;
+				}
+
+				if (next == null)
+					return orderedComponents.getFirst();
+				return next;
+			}
+
+			@Override
+			public Component getComponentBefore(Container aContainer, Component aComponent) {
+				if (aComponent == orderedComponents.getFirst()) {
+					return orderedComponents.getLast();
+				}
+				Component prev = null;
+				for (Component c : orderedComponents) {
+					if (c == aComponent)
+						break;
+					prev = c;
+				}
+				return prev;
+			}
+
+			@Override
+			public Component getFirstComponent(Container aContainer) {
+				return orderedComponents.getFirst();
+			}
+
+			@Override
+			public Component getLastComponent(Container aContainer) {
+				return orderedComponents.getLast();
+			}
+
+			@Override
+			public Component getDefaultComponent(Container aContainer) {
+				return orderedComponents.getFirst();
+			}
+		};
+		return p;
 	}
 
 	private void addComponentToFrame(Component c, int x, int y) {
