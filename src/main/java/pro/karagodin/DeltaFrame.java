@@ -186,7 +186,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				List<EngineType> engines = vehicleType.getEngine();
 				if (!engines.isEmpty()) {
 					EngineType engine = engines.get(0);
-					udEngineModelCodeInput.setText(engine.getEngineModeCode());
+					udEngineModelCodeInput.setSelectedItem(EngineCode.cache.get(engine.getEngineModeCode()));
 					udEngineModelNameInput.setText(engine.getEngineModeName());
 					udEngineModelInput.setText(engine.getEngineModel());
 					BigDecimal enginePowerKvt = engine.getEnginePowerKvtQuanity();
@@ -408,8 +408,8 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		} else {
 			engine = engines.get(0);
 		}
-		if (StringUtils.isNotEmpty(udEngineModelCodeInput.getText()))
-			engine.setEngineModeCode(udEngineModelCodeInput.getText());
+		if (udEngineModelCodeInput.getSelectedItem() != null)
+			engine.setEngineModeCode(((EngineCode) udEngineModelCodeInput.getSelectedItem()).value());
 		if (StringUtils.isNotEmpty(udEngineModelNameInput.getText()))
 			engine.setEngineModeName(udEngineModelNameInput.getText());
 		if (StringUtils.isNotEmpty(udEngineModelInput.getText()))

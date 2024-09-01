@@ -70,7 +70,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField udMarkInput = new JTextField();
 	protected final JTextField udModelInput = new JTextField();
 	protected final JTextField udEngineVolumeQuantityInput = new JTextField();
-	protected final JTextField udEngineModelCodeInput = new JTextField();
+	protected final JComboBox<EngineCode> udEngineModelCodeInput = new JComboBox<>();
 	protected final JTextField udEngineModelNameInput = new JTextField();
 	protected final JTextField udEngineModelInput = new JTextField();
 	protected final JTextField udEnginePowerKvtInput = new JTextField();
@@ -351,6 +351,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(udEngineVolumeQuantityInput, 250, 560);
 		addComponentToFrame(new JLabel("Код типа двигателя"), 5, 580);
 		addComponentToFrame(udEngineModelCodeInput, 250, 580);
+		udEngineModelCodeInput.addItem(null);
+		EngineCode.cache.values().forEach(udEngineModelCodeInput::addItem);
 		addComponentToFrame(new JLabel("Наименование двигателя"), 5, 600);
 		addComponentToFrame(udEngineModelNameInput, 250, 600);
 		addComponentToFrame(new JLabel("Модель двигателя"), 5, 620);
