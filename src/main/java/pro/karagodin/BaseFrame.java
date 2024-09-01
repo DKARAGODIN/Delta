@@ -14,7 +14,6 @@ import java.awt.Component;
 import java.awt.Container;
 import java.awt.FocusTraversalPolicy;
 import java.awt.Font;
-import java.awt.ItemSelectable;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
@@ -42,7 +41,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JLabel innLabel = new JLabel();
 
 	protected final JComboBox<String> registrationInput = new JComboBox<>();
-	protected final JTextField countryCodeInput = new JTextField();
+	protected final JComboBox<String> countryCodeInput = new JComboBox<>();
 	protected final JTextField countryNameInput = new JTextField();
 	protected final JTextField regionNameInput = new JTextField();
 	protected final JTextField townNameInput = new JTextField();
@@ -61,7 +60,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	}
 	protected final JTextField identityOrganisationNameInput = new JTextField();
 	protected final JTextField identityIssuerCodeInput = new JTextField();
-	protected final JTextField identityCountryCodeInput = new JTextField();
+	protected final JComboBox<String> identityCountryCodeInput = new JComboBox<>();
 	protected final JTextField udVehicleEPassportIdInput = new JTextField();
 	protected final JComboBox<String> udSignInput = new JComboBox<>();
 	protected final JTextField udTransportKindCodeInput = new JTextField();
@@ -256,8 +255,45 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(registrationInput, 250, 80);
 		addComponentToFrame(new JLabel("Код страны"), 5, 100);
 		addComponentToFrame(countryCodeInput, 250, 100);
+		countryCodeInput.addItem("");
+		countryCodeInput.addItem("RU");
+		countryCodeInput.addItem("KZ");
+		countryCodeInput.addItem("KG");
+		countryCodeInput.addItem("BY");
+		countryCodeInput.addItem("AM");
+		countryCodeInput.addItemListener(e -> {
+			if (e.getID() == ItemEvent.ITEM_STATE_CHANGED) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					JComboBox<String> cb = (JComboBox<String>) e.getSource();
+					String value = (String) cb.getSelectedItem();
+					switch (value) {
+						case "":
+							countryNameInput.setText("");
+							break;
+						case "RU":
+							countryNameInput.setText("Россия");
+							break;
+						case "KZ":
+							countryNameInput.setText("Казахстан");
+							break;
+						case "KG":
+							countryNameInput.setText("Кыргызстан");
+							break;
+						case "BY":
+							countryNameInput.setText("Беларусь");
+							break;
+						case "AM":
+							countryNameInput.setText("Армения");
+							break;
+						default:
+							countryNameInput.setText("");
+					}
+				}
+			}
+		});
 		addComponentToFrame(new JLabel("Наименование страны"), 5, 120);
 		addComponentToFrame(countryNameInput, 250, 120);
+		countryNameInput.setEditable(false);
 		addComponentToFrame(new JLabel("Наименование региона"), 5, 140);
 		addComponentToFrame(regionNameInput, 250, 140);
 		addComponentToFrame(new JLabel("Наименование города"), 5, 160);
@@ -284,6 +320,13 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(identityIssuerCodeInput, 250, 360);
 		addComponentToFrame(new JLabel("Код страны органа выдавшего УЛ"), 5, 380);
 		addComponentToFrame(identityCountryCodeInput, 250, 380);
+
+		identityCountryCodeInput.addItem("");
+		identityCountryCodeInput.addItem("RU");
+		identityCountryCodeInput.addItem("KZ");
+		identityCountryCodeInput.addItem("KG");
+		identityCountryCodeInput.addItem("BY");
+		identityCountryCodeInput.addItem("AM");
 		//Раздел 2
 		addComponentToFrame(new JLabel("Номер ЭПТС"), 5, 420);
 		addComponentToFrame(udVehicleEPassportIdInput, 250, 420);
@@ -445,7 +488,6 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				middleNameInput,
 				innInput,
 				registrationInput,
-				countryCodeInput,
 				countryNameInput,
 				regionNameInput,
 				townNameInput,
@@ -482,23 +524,18 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				payDutyTaxFeeRateInput,
 				payCoefficientInput,
 				doc1KindCodeInput,
-				doc1NameInput,
 				doc1NumberInput,
 				doc1DateInput,
 				doc2KindCodeInput,
-				doc2NameInput,
 				doc2NumberInput,
 				doc2DateInput,
 				doc3KindCodeInput,
-				doc3NameInput,
 				doc3NumberInput,
 				doc3DateInput,
 				doc4KindCodeInput,
-				doc4NameInput,
 				doc4NumberInput,
 				doc4DateInput,
 				doc5KindCodeInput,
-				doc5NameInput,
 				doc5NumberInput,
 				doc5DateInput,
 				brokerSurNameInput,

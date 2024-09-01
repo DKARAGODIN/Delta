@@ -144,7 +144,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			RUAddressType address = payer.getTPOAddress();
 			if (address != null) {
 				registrationInput.setSelectedItem(address.getAddressKindCode());
-				countryCodeInput.setText(address.getCountryCode());
+				countryCodeInput.setSelectedItem(address.getCountryCode());
 				countryNameInput.setText(address.getCounryName());
 				regionNameInput.setText(address.getRegion());
 				townNameInput.setText(address.getTown());
@@ -164,7 +164,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				}
 				identityOrganisationNameInput.setText(card.getOrganizationName());
 				identityIssuerCodeInput.setText(card.getIssuerCode());
-				identityCountryCodeInput.setText(card.getCountryCode());
+				identityCountryCodeInput.setSelectedItem(card.getCountryCode());
 			}
 		}
 		List<UtilCollDetailsType> utils = data.getUtilCollDetails();
@@ -323,8 +323,8 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			address = new RUAddressType();
 		if (registrationInput.getSelectedItem() != null)
 			address.setAddressKindCode((String) registrationInput.getSelectedItem());
-		if (StringUtils.isNotEmpty(countryCodeInput.getText()))
-			address.setCountryCode(countryCodeInput.getText());
+		if (countryCodeInput.getSelectedItem() != null)
+			address.setCountryCode((String) countryCodeInput.getSelectedItem());
 		if (StringUtils.isNotEmpty(countryNameInput.getText()))
 			address.setCounryName(countryNameInput.getText());
 		if (StringUtils.isNotEmpty(regionNameInput.getText()))
@@ -363,8 +363,8 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			identity.setOrganizationName(identityOrganisationNameInput.getText());
 		if (StringUtils.isNotEmpty(identityIssuerCodeInput.getText()))
 			identity.setIssuerCode(identityIssuerCodeInput.getText());
-		if (StringUtils.isNotEmpty(identityCountryCodeInput.getText()))
-			identity.setCountryCode(identityCountryCodeInput.getText());
+		if (identityCountryCodeInput.getSelectedItem() != null)
+			identity.setCountryCode((String) identityCountryCodeInput.getSelectedItem());
 		payer.setIdentityDoc(identity);
 
 		List<UtilCollDetailsType> utilCollDetailsTypes = data.getUtilCollDetails();
