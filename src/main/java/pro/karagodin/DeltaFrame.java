@@ -121,7 +121,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			String xml = new String(bis.readAllBytes());
 			XmlUtils.validate(xml);
 			data = XmlUtils.unMarshall(new StreamSource(new StringReader(xml)), RecyclingDetailsType.class).getValue();
-
+			clearFields();
 			fillFieldsFromData();
 			runAllCheckers();
 		}

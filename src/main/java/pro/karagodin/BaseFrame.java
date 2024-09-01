@@ -490,7 +490,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				middleNameInput,
 				innInput,
 				registrationInput,
-				countryNameInput,
+				countryCodeInput,
 				regionNameInput,
 				townNameInput,
 				streetNameInput,
@@ -610,5 +610,74 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 
 	protected void runAllCheckers() {
 		checkers.forEach(Runnable::run);
+	}
+
+	protected void clearFields() {
+		surNameInput.setText(null);
+		nameInput.setText(null);
+		middleNameInput.setText(null);
+		innInput.setText(null);
+		registrationInput.setSelectedItem(null);
+		countryCodeInput.setSelectedItem(null);
+		countryNameInput.setText(null);
+		regionNameInput.setText(null);
+		townNameInput.setText(null);
+		streetNameInput.setText(null);
+		houseNumberInput.setText(null);
+		roomInput.setText(null);
+		identityCardCodeInput.setSelectedItem(null);
+		fullIdentityCardNameInput.setText(null);
+		identityCardSeriesInput.setText(null);
+		identityCardNumberInput.setText(null);
+		identityCardDateInput.setText(null);
+		identityOrganisationNameInput.setText(null);
+		identityIssuerCodeInput.setText(null);
+		identityCountryCodeInput.setSelectedItem(null);
+		udVehicleEPassportIdInput.setText(null);
+		udSignInput.setSelectedItem("К");
+		udTransportKindCodeInput.setSelectedItem(null);
+		udTransportCategoryCodeInput.setText(null);
+		udMarkCodeInput.setText(null);
+		udMarkInput.setText(null);
+		udModelInput.setText(null);
+		udEngineVolumeQuantityInput.setText(null);
+		udEngineModelCodeInput.setSelectedItem(null);
+		udEngineModelNameInput.setText(null);
+		udEngineModelInput.setText(null);
+		udEnginePowerKvtInput.setText(null);
+		udTotalWeightInput.setText(null);
+		udManufactureDateInput.setText(null);
+		udVinInput.setText(null);
+		payImportCustomsDutyInput.setText(null);
+		payExciseInput.setText(null);
+		payVatInput.setText(null);
+		payBorderCrossingDateInput.setText(null);
+		payDutyTaxFeeRateInput.setText(null);
+		payCoefficientInput.setText(null);
+		doc1KindCodeInput.setSelectedItem(null);
+		doc1NameInput.setText(null);
+		doc1NumberInput.setText(null);
+		doc1DateInput.setText(null);
+		doc2KindCodeInput.setSelectedItem(null);
+		doc2NameInput.setText(null);
+		doc2NumberInput.setText(null);
+		doc2DateInput.setText(null);
+		doc3KindCodeInput.setSelectedItem(null);
+		doc3NameInput.setText(null);
+		doc3NumberInput.setText(null);
+		doc3DateInput.setText(null);
+		doc4KindCodeInput.setSelectedItem(null);
+		doc4NameInput.setText(null);
+		doc4NumberInput.setText(null);
+		doc4DateInput.setText(null);
+		doc5KindCodeInput.setSelectedItem(null);
+		doc5NameInput.setText(null);
+		doc5NumberInput.setText(null);
+		doc5DateInput.setText(null);
+		brokerSurNameInput.setText(null);
+		brokerNameInput.setText(null);
+		brokerMiddleNameInput.setText(null);
+		brokerEmailInput.setText(null);
+		brokerPhoneInput.setText(null);
 	}
 }
