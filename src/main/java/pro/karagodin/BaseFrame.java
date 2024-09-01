@@ -21,6 +21,7 @@ import java.awt.event.KeyEvent;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Map;
 
 
 public abstract class BaseFrame extends JFrame implements ActionListener {
@@ -63,7 +64,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JComboBox<String> identityCountryCodeInput = new JComboBox<>();
 	protected final JTextField udVehicleEPassportIdInput = new JTextField();
 	protected final JComboBox<String> udSignInput = new JComboBox<>();
-	protected final JTextField udTransportKindCodeInput = new JTextField();
+	protected final JComboBox<TransportKind> udTransportKindCodeInput = new JComboBox<>();
 	protected final JTextField udTransportCategoryCodeInput = new JTextField();
 	protected final JTextField udMarkCodeInput = new JTextField();
 	protected final JTextField udMarkInput = new JTextField();
@@ -255,7 +256,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(registrationInput, 250, 80);
 		addComponentToFrame(new JLabel("Код страны"), 5, 100);
 		addComponentToFrame(countryCodeInput, 250, 100);
-		countryCodeInput.addItem("");
+		countryCodeInput.addItem(null);
 		countryCodeInput.addItem("RU");
 		countryCodeInput.addItem("KZ");
 		countryCodeInput.addItem("KG");
@@ -267,9 +268,6 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 					JComboBox<String> cb = (JComboBox<String>) e.getSource();
 					String value = (String) cb.getSelectedItem();
 					switch (value) {
-						case "":
-							countryNameInput.setText("");
-							break;
 						case "RU":
 							countryNameInput.setText("Россия");
 							break;
@@ -288,6 +286,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 						default:
 							countryNameInput.setText("");
 					}
+				} else {
+					countryNameInput.setText(null);
 				}
 			}
 		});
@@ -320,8 +320,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(identityIssuerCodeInput, 250, 360);
 		addComponentToFrame(new JLabel("Код страны органа выдавшего УЛ"), 5, 380);
 		addComponentToFrame(identityCountryCodeInput, 250, 380);
-
-		identityCountryCodeInput.addItem("");
+		identityCountryCodeInput.addItem(null);
 		identityCountryCodeInput.addItem("RU");
 		identityCountryCodeInput.addItem("KZ");
 		identityCountryCodeInput.addItem("KG");
@@ -338,6 +337,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 
 		addComponentToFrame(new JLabel("Вид ТС"), 5, 460);
 		addComponentToFrame(udTransportKindCodeInput, 250, 460);
+		udTransportKindCodeInput.addItem(null);
+		TransportKind.cache.values().forEach(udTransportKindCodeInput::addItem);
 		addComponentToFrame(new JLabel("Категория ТС"), 5, 480);
 		addComponentToFrame(udTransportCategoryCodeInput, 250, 480);
 		addComponentToFrame(new JLabel("Код марки ТС"), 5, 500);
@@ -447,7 +448,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	}
 
 	private void fillDocumentComponents(JComboBox<String> docKindCodeInput, JTextField name, JTextField number, JFormattedTextField date) {
-		docKindCodeInput.addItem("");
+		docKindCodeInput.addItem(null);
 		docKindCodeInput.addItem("03011");
 		docKindCodeInput.addItem("09999");
 		name.setEditable(false);
@@ -458,23 +459,21 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
 					JComboBox<String> cb = (JComboBox<String>) e.getSource();
 					String selectedItem = (String) cb.getSelectedItem();
-					if (StringUtils.isEmpty(selectedItem)) {
-						name.setText(null);
-						number.setText(null);
-						number.setEditable(false);
-						date.setValue(null);
-						date.setEditable(false);
+					if ("03011".equals(selectedItem)) {
+						name.setText("договор (контракт), заключённый при совершении сделки с товарами");
 					} else {
-						if ("03011".equals(selectedItem)) {
-							name.setText("договор (контракт), заключённый при совершении сделки с товарами");
-						} else {
-							name.setText("иные документы");
-						}
-						number.setEditable(true);
-						number.setText(null);
-						date.setEditable(true);
-						date.setText(null);
+						name.setText("иные документы");
 					}
+					number.setEditable(true);
+					number.setText(null);
+					date.setEditable(true);
+					date.setText(null);
+				} else {
+					name.setText(null);
+					number.setText(null);
+					number.setEditable(false);
+					date.setValue(null);
+					date.setEditable(false);
 				}
 			}
 		});

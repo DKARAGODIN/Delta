@@ -172,7 +172,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			UtilCollDetailsType util = utils.get(0);
 			udVehicleEPassportIdInput.setText(util.getVehicleEPassportId());
 			udSignInput.setSelectedItem(util.getSign());
-			udTransportKindCodeInput.setText(util.getTransportKindCode());
+			udTransportKindCodeInput.setSelectedItem(TransportKind.cache.get(util.getTransportKindCode()));
 			VehicleType vehicleType = util.getVehicle();
 			if (vehicleType != null) {
 				udTransportCategoryCodeInput.setText(vehicleType.getTransportCategoryCode());
@@ -381,8 +381,8 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		if (StringUtils.isNotEmpty(udVehicleEPassportIdInput.getText()))
 			utilDetails.setVehicleEPassportId(udVehicleEPassportIdInput.getText());
 		utilDetails.setSign((String) udSignInput.getSelectedItem());
-		if (StringUtils.isNotEmpty(udTransportKindCodeInput.getText()))
-			utilDetails.setTransportKindCode(udTransportKindCodeInput.getText());
+		if (udTransportKindCodeInput.getSelectedItem() != null)
+			utilDetails.setTransportKindCode(((TransportKind) udTransportKindCodeInput.getSelectedItem()).value());
 
 		VehicleType vehicleType = utilDetails.getVehicle();
 		if (vehicleType == null) {
