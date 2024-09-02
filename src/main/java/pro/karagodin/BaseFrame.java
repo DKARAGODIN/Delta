@@ -49,7 +49,6 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField houseNumberInput = new JTextField();
 	protected final JTextField roomInput = new JTextField();
 	protected final JComboBox<IdentityCardCode> identityCardCodeInput = new JComboBox<>();
-	protected final JTextField fullIdentityCardNameInput = new JTextField();
 	protected final JTextField identityCardSeriesInput = new JTextField();
 	protected final JTextField identityCardNumberInput = new JTextField();
 	protected final JFormattedTextField identityCardDateInput;
@@ -70,7 +69,6 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField udModelInput = new JTextField();
 	protected final JTextField udEngineVolumeQuantityInput = new JTextField();
 	protected final JComboBox<EngineCode> udEngineModelCodeInput = new JComboBox<>();
-	protected final JTextField udEngineModelNameInput = new JTextField();
 	protected final JTextField udEngineModelInput = new JTextField();
 	protected final JTextField udEnginePowerKvtInput = new JTextField();
 	protected final JTextField udTotalWeightInput = new JTextField();
@@ -303,12 +301,10 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(houseNumberInput, 250, 200);
 		addComponentToFrame(new JLabel("Номер квартиры"), 5, 220);
 		addComponentToFrame(roomInput, 250, 220);
-		addComponentToFrame(new JLabel("Код документа УЛ"), 5, 240);
+		addComponentToFrame(new JLabel("Наименование документа УЛ"), 5, 240);
 		addComponentToFrame(identityCardCodeInput, 250, 240);
 		identityCardCodeInput.addItem(null);
 		IdentityCardCode.cache.values().forEach(identityCardCodeInput::addItem);
-		addComponentToFrame(new JLabel("Наименование документа УЛ"), 5, 260);
-		addComponentToFrame(fullIdentityCardNameInput, 250, 260);
 		addComponentToFrame(new JLabel("Серия документа УЛ"), 5, 280);
 		addComponentToFrame(identityCardSeriesInput, 250, 280);
 		addComponentToFrame(new JLabel("Номер документа УЛ"), 5, 300);
@@ -354,8 +350,6 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(udEngineModelCodeInput, 250, 580);
 		udEngineModelCodeInput.addItem(null);
 		EngineCode.cache.values().forEach(udEngineModelCodeInput::addItem);
-		addComponentToFrame(new JLabel("Наименование двигателя"), 5, 600);
-		addComponentToFrame(udEngineModelNameInput, 250, 600);
 		addComponentToFrame(new JLabel("Модель двигателя"), 5, 620);
 		addComponentToFrame(udEngineModelInput, 250, 620);
 		addComponentToFrame(new JLabel("Мощность двигателя КВТ"), 5, 640);
@@ -497,7 +491,6 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				houseNumberInput,
 				roomInput,
 				identityCardCodeInput,
-				fullIdentityCardNameInput,
 				identityCardSeriesInput,
 				identityCardNumberInput,
 				identityCardDateInput,
@@ -513,7 +506,6 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				udModelInput,
 				udEngineVolumeQuantityInput,
 				udEngineModelCodeInput,
-				udEngineModelNameInput,
 				udEngineModelInput,
 				udEnginePowerKvtInput,
 				udTotalWeightInput,
@@ -626,7 +618,6 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		houseNumberInput.setText(null);
 		roomInput.setText(null);
 		identityCardCodeInput.setSelectedItem(null);
-		fullIdentityCardNameInput.setText(null);
 		identityCardSeriesInput.setText(null);
 		identityCardNumberInput.setText(null);
 		identityCardDateInput.setText(null);
@@ -642,7 +633,6 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		udModelInput.setText(null);
 		udEngineVolumeQuantityInput.setText(null);
 		udEngineModelCodeInput.setSelectedItem(null);
-		udEngineModelNameInput.setText(null);
 		udEngineModelInput.setText(null);
 		udEnginePowerKvtInput.setText(null);
 		udTotalWeightInput.setText(null);

@@ -155,7 +155,6 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			RUIdentityCardType card = payer.getIdentityDoc();
 			if (card != null) {
 				identityCardCodeInput.setSelectedItem(IdentityCardCode.cache.get(card.getIdentityCardCode()));
-				fullIdentityCardNameInput.setText(card.getFullIdentityCardName());
 				identityCardSeriesInput.setText(card.getIdentityCardSeries());
 				identityCardNumberInput.setText(card.getIdentityCardNumber());
 				XMLGregorianCalendar calendar = card.getIdentityCardDate();
@@ -187,7 +186,6 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				if (!engines.isEmpty()) {
 					EngineType engine = engines.get(0);
 					udEngineModelCodeInput.setSelectedItem(EngineCode.cache.get(engine.getEngineModeCode()));
-					udEngineModelNameInput.setText(engine.getEngineModeName());
 					udEngineModelInput.setText(engine.getEngineModel());
 					BigDecimal enginePowerKvt = engine.getEnginePowerKvtQuanity();
 					if (enginePowerKvt != null) {
@@ -340,10 +338,10 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		RUIdentityCardType identity = payer.getIdentityDoc();
 		if (identity == null)
 			identity = new RUIdentityCardType();
-		if (identityCardCodeInput.getSelectedItem() != null)
+		if (identityCardCodeInput.getSelectedItem() != null) {
 			identity.setIdentityCardCode(((IdentityCardCode) identityCardCodeInput.getSelectedItem()).value());
-		if (StringUtils.isNotEmpty(fullIdentityCardNameInput.getText()))
-			identity.setFullIdentityCardName(fullIdentityCardNameInput.getText());
+			identity.setFullIdentityCardName(((IdentityCardCode) identityCardCodeInput.getSelectedItem()).description());
+		}
 		if (StringUtils.isNotEmpty(identityCardSeriesInput.getText()))
 			identity.setIdentityCardSeries(identityCardSeriesInput.getText());
 		if (StringUtils.isNotEmpty(identityCardNumberInput.getText()))
@@ -411,10 +409,10 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		} else {
 			engine = engines.get(0);
 		}
-		if (udEngineModelCodeInput.getSelectedItem() != null)
+		if (udEngineModelCodeInput.getSelectedItem() != null) {
 			engine.setEngineModeCode(((EngineCode) udEngineModelCodeInput.getSelectedItem()).value());
-		if (StringUtils.isNotEmpty(udEngineModelNameInput.getText()))
-			engine.setEngineModeName(udEngineModelNameInput.getText());
+			engine.setEngineModeName(((EngineCode) udEngineModelCodeInput.getSelectedItem()).description());
+		}
 		if (StringUtils.isNotEmpty(udEngineModelInput.getText()))
 			engine.setEngineModel(udEngineModelInput.getText());
 		if (StringUtils.isNotEmpty(udEnginePowerKvtInput.getText()))
