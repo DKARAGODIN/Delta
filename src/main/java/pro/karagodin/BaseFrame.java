@@ -28,6 +28,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 
 	protected final JButton save = new JButton("Сохранить XML");
 	protected final JButton open = new JButton("Открыть XML");
+	protected final JButton clear = new JButton("Очистить");
 
 	protected final JTextField surNameInput = new JTextField();
 	protected final JLabel surNameLabel = new JLabel();
@@ -164,6 +165,12 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		save.setLocation(950, 600);
 		save.addActionListener(this);
 		container.add(save);
+
+		clear.setFont(appFont);
+		clear.setSize(150, 20);
+		clear.setLocation(1100, 600);
+		clear.addActionListener(this);
+		container.add(clear);
 
 		// Фамилия плательщика
 		addComponentToFrame(new JLabel("Фамилия плательщика"), 5, 0);

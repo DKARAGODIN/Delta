@@ -63,6 +63,10 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				} else {
 					throw new RuntimeException("Форма не прошла валидацию");
 				}
+			} else if (event.getSource() == clear) {
+				clearFields();
+				data = null;
+				runAllCheckers();
 			}
 		} catch (Exception e) {
 			List<String> messages = new ArrayList<>();
