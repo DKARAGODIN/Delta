@@ -365,6 +365,11 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			identity.setCountryCode((String) identityCountryCodeInput.getSelectedItem());
 		payer.setIdentityDoc(identity);
 
+		payer.setPersonIDIndicator(true);
+		payer.setIEPersonIDIndicator(false);
+		payer.setFactPayerIndicator(true);
+		payer.setDebtorPayerIndicator(false);
+
 		List<UtilCollDetailsType> utilCollDetailsTypes = data.getUtilCollDetails();
 		UtilCollDetailsType utilDetails;
 		if (utilCollDetailsTypes.isEmpty()) {
