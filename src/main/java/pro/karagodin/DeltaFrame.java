@@ -4,6 +4,10 @@ import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xwpf.usermodel.IBodyElement;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFParagraph;
+import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.xml.sax.SAXException;
 import ru.customs.commonaggregatetypes._5_22.PersonSignatureType;
 import ru.customs.commonaggregatetypes._5_22.RFOrganizationFeaturesType;
@@ -33,10 +37,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -99,13 +105,14 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		}
 	}
 
-	private void saveFile() throws JAXBException, DatatypeConfigurationException {
+	private void saveFile() throws JAXBException, DatatypeConfigurationException, IOException {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Сохранить файл");
 		if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
 			fillDataFromFields();
 			JAXBElement<RecyclingDetailsType> element = new ObjectFactory().createRecyclingDetails(data);
 			File f = fileChooser.getSelectedFile();
+			createRequest();
 			try {
 				XmlUtils.marshall(element, f);
 			} catch (JAXBException e) {
@@ -355,7 +362,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				GregorianCalendar calendar = new GregorianCalendar();
 				calendar.setTime(d);
 				XMLGregorianCalendar d2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
-				identity.setDocValidityDate(d2);
+				identity.setIdentityCardDate(d2);
 			}
 		}
 		if (StringUtils.isNotEmpty(identityOrganisationNameInput.getText()))
@@ -480,5 +487,107 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			}
 			newDocuments.add(doc);
 		}
+	}
+
+	public void createRequest() throws IOException {
+		XWPFDocument document = new XWPFDocument(OfficeUtils.class.getClassLoader().getResourceAsStream("templates/request.docx"));
+		IBodyElement elem = document.getBodyElements().get(6);
+		XWPFParagraph doc = (XWPFParagraph) elem;
+		XWPFDocument body = (XWPFDocument) doc.getBody();
+		List<IBodyElement> elements = body.getBodyElements();
+		{
+			XWPFParagraph paragraph = (XWPFParagraph) elements.get(6);
+			XWPFRun run = paragraph.getRuns().get(1);
+			run.setText("т " + data.getPayer().getFirst().getPerson().getPersonSurname() + " " +
+					data.getPayer().getFirst().getPerson().getPersonName() + " " +
+					data.getPayer().getFirst().getPerson().getPersonMiddleName(), 0);
+		}
+		{
+			XWPFParagraph paragraph = (XWPFParagraph) elements.get(7);
+			XWPFRun run = paragraph.getRuns().get(0);
+			run.setText("паспорт серии " + data.getPayer().getFirst().getIdentityDoc().getIdentityCardSeries() + " № " +
+					data.getPayer().getFirst().getIdentityDoc().getIdentityCardNumber(), 0);
+		}
+		{
+			XWPFParagraph paragraph = (XWPFParagraph) elements.get(8);
+			XWPFRun run = paragraph.getRuns().get(0);
+			run.setText("выдан " + data.getPayer().getFirst().getIdentityDoc().getOrganizationName(), 0);
+		}
+		{
+			XWPFParagraph paragraph = (XWPFParagraph) elements.get(9);
+			XWPFRun run = paragraph.getRuns().get(0);
+			XMLGregorianCalendar cal = data.getPayer().getFirst().getIdentityDoc().getIdentityCardDate();
+			GregorianCalendar calendar = cal.toGregorianCalendar();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+			run.setText(" " + sdf.format(calendar.getTime()) + " ", 0);
+		}
+		{
+			XWPFParagraph paragraph = (XWPFParagraph) elements.get(11);
+			XWPFRun run = paragraph.getRuns().get(0);
+			StringBuilder address = new StringBuilder();
+			address.append(data.getPayer().getFirst().getTPOAddress().getRegion());
+			address.append(" ");
+			address.append(data.getPayer().getFirst().getTPOAddress().getTown());
+			address.append(" ");
+			address.append(data.getPayer().getFirst().getTPOAddress().getStreetHouse());
+			address.append(" ");
+			address.append(data.getPayer().getFirst().getTPOAddress().getHouse());
+			address.append(" ");
+			address.append(data.getPayer().getFirst().getTPOAddress().getRoom());
+			run.setText(address.toString(), 0);
+		}
+		{
+			XWPFParagraph paragraph = (XWPFParagraph) elements.get(13);
+			XWPFRun run = paragraph.getRuns().get(0);
+			run.setText(brokerPhoneInput.getText(), 0);
+		}
+		{
+			XWPFParagraph paragraph = (XWPFParagraph) elements.get(15);
+			XWPFRun run = paragraph.getRuns().get(0);
+			run.setText(brokerEmailInput.getText(), 0);
+		}
+		{
+			XWPFParagraph paragraph = (XWPFParagraph) elements.get(19);
+			{
+				XWPFRun run = paragraph.getRuns().get(5);
+				UtilCollDetailsType utilDetails = data.getUtilCollDetails().getFirst();
+				VehicleType vehicle = utilDetails.getVehicle();
+				run.setText(" " + vehicle.getMark() + " " + vehicle.getModel() + " ", 0);
+			}
+			{
+				XWPFRun run = paragraph.getRuns().get(7);
+				UtilCollDetailsType utilDetails = data.getUtilCollDetails().getFirst();
+				run.setText(" идентификационный номер " + utilDetails.getVINID() + " ", 0);
+			}
+			{
+				XWPFRun run = paragraph.getRuns().get(15);
+				String country = "";
+				String brokerCountryVal = (String) brokerCountry.getSelectedItem();
+				if ("KG".equals(brokerCountryVal))
+					country = "Киргизия";
+				else if ("KZ".equals(brokerCountryVal))
+					country = "Казахстан";
+				else if ("AM".equals(brokerCountryVal))
+					country = "Армения";
+				else if ("ИН".equals(brokerCountryVal))
+					country = "Беларусь";
+				run.setText("территории Республики " + country + " (Беларусь, ", 0);
+			}
+			{
+				XWPFRun run = paragraph.getRuns().get(11);
+				UtilCollDetailsType utilDetails = data.getUtilCollDetails().getFirst();
+				VehicleType vehicle = utilDetails.getVehicle();
+				VehicleProdDateType prodDate = vehicle.getVehicleProdDate();
+				XMLGregorianCalendar cal = prodDate.getManufactureDate();
+				run.setText(" " + cal.getYear(), 0);
+			}
+		}
+		{
+			XWPFParagraph paragraph = (XWPFParagraph) elements.get(29);
+			XWPFRun run = paragraph.getRuns().get(3);
+			run.setText(this.brokerSurNameInput.getText() + " " + this.brokerNameInput.getText(), 0);
+		}
+		document.write(new FileOutputStream("Hello.docx"));
+		document.close();
 	}
 }

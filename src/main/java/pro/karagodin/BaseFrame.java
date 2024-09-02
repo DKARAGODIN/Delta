@@ -72,10 +72,6 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField udTransportCategoryCodeInput = new JTextField();
 	protected final JComboBox<MarkKind> udMarkCodeInput = new JComboBox<>();
 
-	private JTextComponent editor;
-	private KeyListener editorKeyListener;
-	private FocusListener editorFocusListener;
-
 	protected final JTextField udModelInput = new JTextField();
 	protected final JTextField udEngineVolumeQuantityInput = new JTextField();
 	protected final JComboBox<EngineCode> udEngineModelCodeInput = new JComboBox<>();
@@ -150,6 +146,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField brokerMiddleNameInput = new JTextField();
 	protected final JTextField brokerEmailInput = new JTextField();
 	protected final JTextField brokerPhoneInput = new JTextField();
+	protected final JComboBox<String> brokerCountry = new JComboBox<>();
 
 	private final List<JLabel> labels;
 	private final List<Runnable> checkers;
@@ -455,6 +452,13 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(brokerEmailInput, 1050, 480);
 		addComponentToFrame(new JLabel("Контактный номер телефона"), 800, 500);
 		addComponentToFrame(brokerPhoneInput, 1050, 500);
+		addComponentToFrame(new JLabel("Страна ввоза"), 800, 520);
+		addComponentToFrame(brokerCountry, 1050, 520);
+		brokerCountry.addItem(null);
+		brokerCountry.addItem("KZ");
+		brokerCountry.addItem("KG");
+		brokerCountry.addItem("AM");
+		brokerCountry.addItem("BY");
 
 		labels = List.of(surNameLabel, nameLabel, innLabel);
 		checkers = List.of(surNameChecker, nameChecker, innChecker);
@@ -554,7 +558,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				brokerNameInput,
 				brokerMiddleNameInput,
 				brokerEmailInput,
-				brokerPhoneInput
+				brokerPhoneInput,
+				brokerCountry
 			);
 
 			@Override
@@ -686,5 +691,6 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		brokerMiddleNameInput.setText(null);
 		brokerEmailInput.setText(null);
 		brokerPhoneInput.setText(null);
+		brokerCountry.setSelectedItem(null);
 	}
 }
