@@ -179,8 +179,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			VehicleType vehicleType = util.getVehicle();
 			if (vehicleType != null) {
 				udTransportCategoryCodeInput.setText(vehicleType.getTransportCategoryCode());
-				udMarkCodeInput.setText(vehicleType.getMarkCode());
-				udMarkInput.setText(vehicleType.getMark());
+				udMarkCodeInput.setSelectedItem(MarkKind.cache.get(vehicleType.getMarkCode()));
 				udModelInput.setText(vehicleType.getModel());
 				BigDecimal engineVolumeQuanity = vehicleType.getEngineVolumeQuanity();
 				if (engineVolumeQuanity != null) {
@@ -396,10 +395,10 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		}
 		if (StringUtils.isNotEmpty(udTransportCategoryCodeInput.getText()))
 			vehicleType.setTransportCategoryCode(udTransportCategoryCodeInput.getText());
-		if (StringUtils.isNotEmpty(udMarkCodeInput.getText()))
-			vehicleType.setMarkCode(udMarkCodeInput.getText());
-		if (StringUtils.isNotEmpty(udMarkInput.getText()))
-			vehicleType.setMark(udMarkInput.getText());
+		if (udMarkCodeInput.getSelectedItem() != null) {
+			vehicleType.setMarkCode(((MarkKind) udMarkCodeInput.getSelectedItem()).code());
+			vehicleType.setMark(((MarkKind) udMarkCodeInput.getSelectedItem()).name());
+		}
 		if (StringUtils.isNotEmpty(udModelInput.getText()))
 			vehicleType.setModel(udModelInput.getText());
 		if (StringUtils.isNotEmpty(udEngineVolumeQuantityInput.getText()))

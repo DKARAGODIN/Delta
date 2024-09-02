@@ -2,6 +2,7 @@ package pro.karagodin;
 
 import org.apache.commons.lang3.StringUtils;
 
+import javax.swing.ComboBoxEditor;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
@@ -10,14 +11,18 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.text.DateFormatter;
+import javax.swing.text.JTextComponent;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.FocusTraversalPolicy;
 import java.awt.Font;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -65,8 +70,12 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JComboBox<String> udSignInput = new JComboBox<>();
 	protected final JComboBox<TransportKind> udTransportKindCodeInput = new JComboBox<>();
 	protected final JTextField udTransportCategoryCodeInput = new JTextField();
-	protected final JTextField udMarkCodeInput = new JTextField();
-	protected final JTextField udMarkInput = new JTextField();
+	protected final JComboBox<MarkKind> udMarkCodeInput = new JComboBox<>();
+
+	private JTextComponent editor;
+	private KeyListener editorKeyListener;
+	private FocusListener editorFocusListener;
+
 	protected final JTextField udModelInput = new JTextField();
 	protected final JTextField udEngineVolumeQuantityInput = new JTextField();
 	protected final JComboBox<EngineCode> udEngineModelCodeInput = new JComboBox<>();
@@ -347,8 +356,11 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(udTransportCategoryCodeInput, 250, 480);
 		addComponentToFrame(new JLabel("Код марки ТС"), 5, 500);
 		addComponentToFrame(udMarkCodeInput, 250, 500);
-		addComponentToFrame(new JLabel("Наименование марки ТС"), 5, 520);
-		addComponentToFrame(udMarkInput, 250, 520);
+		udMarkCodeInput.addItem(null);
+		MarkKind.cache.values().forEach(udMarkCodeInput::addItem);
+
+		AutoCompletion.enable(udMarkCodeInput);
+
 		addComponentToFrame(new JLabel("Модель ТС"), 5, 540);
 		addComponentToFrame(udModelInput, 250, 540);
 		addComponentToFrame(new JLabel("Объем двигателя"), 5, 560);
@@ -509,7 +521,6 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				udTransportKindCodeInput,
 				udTransportCategoryCodeInput,
 				udMarkCodeInput,
-				udMarkInput,
 				udModelInput,
 				udEngineVolumeQuantityInput,
 				udEngineModelCodeInput,
@@ -635,8 +646,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		udSignInput.setSelectedItem("К");
 		udTransportKindCodeInput.setSelectedItem(null);
 		udTransportCategoryCodeInput.setText(null);
-		udMarkCodeInput.setText(null);
-		udMarkInput.setText(null);
+		udMarkCodeInput.setSelectedItem(null);
 		udModelInput.setText(null);
 		udEngineVolumeQuantityInput.setText(null);
 		udEngineModelCodeInput.setSelectedItem(null);
