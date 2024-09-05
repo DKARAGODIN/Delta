@@ -62,6 +62,12 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField identityOrganisationNameInput = new JTextField();
 	protected final JTextField identityIssuerCodeInput = new JTextField();
 	protected final JComboBox<String> identityCountryCodeInput = new JComboBox<>();
+	protected final JFormattedTextField bdInput;
+	{
+		DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+		DateFormatter df = new DateFormatter(format);
+		bdInput = new JFormattedTextField(df);
+	}
 	protected final JTextField udVehicleEPassportIdInput = new JTextField();
 	protected final JComboBox<String> udSignInput = new JComboBox<>();
 	protected final JComboBox<TransportKind> udTransportKindCodeInput = new JComboBox<>();
@@ -325,24 +331,27 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(identityCardCodeInput, 250, 240);
 		identityCardCodeInput.addItem(null);
 		IdentityCardCode.cache.values().forEach(identityCardCodeInput::addItem);
-		addComponentToFrame(new JLabel("Серия документа УЛ"), 5, 280);
-		addComponentToFrame(identityCardSeriesInput, 250, 280);
-		addComponentToFrame(new JLabel("Номер документа УЛ"), 5, 300);
-		addComponentToFrame(identityCardNumberInput, 250, 300);
-		addComponentToFrame(new JLabel("Дата документа УЛ (dd.MM.yyyy)"), 5, 320);
-		addComponentToFrame(identityCardDateInput, 250, 320);
-		addComponentToFrame(new JLabel("Орган выдавший документ УЛ"), 5, 340);
-		addComponentToFrame(identityOrganisationNameInput, 250, 340);
-		addComponentToFrame(new JLabel("Код подразделения выдавшего УЛ"), 5, 360);
-		addComponentToFrame(identityIssuerCodeInput, 250, 360);
-		addComponentToFrame(new JLabel("Код страны органа выдавшего УЛ"), 5, 380);
-		addComponentToFrame(identityCountryCodeInput, 250, 380);
+		addComponentToFrame(new JLabel("Серия документа УЛ"), 5, 260);
+		addComponentToFrame(identityCardSeriesInput, 250, 260);
+		addComponentToFrame(new JLabel("Номер документа УЛ"), 5, 280);
+		addComponentToFrame(identityCardNumberInput, 250, 280);
+		addComponentToFrame(new JLabel("Дата документа УЛ (dd.MM.yyyy)"), 5, 300);
+		addComponentToFrame(identityCardDateInput, 250, 300);
+		addComponentToFrame(new JLabel("Орган выдавший документ УЛ"), 5, 320);
+		addComponentToFrame(identityOrganisationNameInput, 250, 320);
+		addComponentToFrame(new JLabel("Код подразделения выдавшего УЛ"), 5, 340);
+		addComponentToFrame(identityIssuerCodeInput, 250, 340);
+		addComponentToFrame(new JLabel("Код страны органа выдавшего УЛ"), 5, 360);
+		addComponentToFrame(identityCountryCodeInput, 250, 360);
 		identityCountryCodeInput.addItem(null);
 		identityCountryCodeInput.addItem("RU");
 		identityCountryCodeInput.addItem("KZ");
 		identityCountryCodeInput.addItem("KG");
 		identityCountryCodeInput.addItem("BY");
 		identityCountryCodeInput.addItem("AM");
+		addComponentToFrame(new JLabel("Дата рождения"), 5, 380);
+		addComponentToFrame(bdInput, 250, 380);
+
 		//Раздел 2
 		addComponentToFrame(new JLabel("Номер ЭПТС"), 5, 420);
 		addComponentToFrame(udVehicleEPassportIdInput, 250, 420);
@@ -541,6 +550,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				identityOrganisationNameInput,
 				identityIssuerCodeInput,
 				identityCountryCodeInput,
+				bdInput,
 				udVehicleEPassportIdInput,
 				udSignInput,
 				udTransportKindCodeInput,
@@ -674,6 +684,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		identityOrganisationNameInput.setText(null);
 		identityIssuerCodeInput.setText(null);
 		identityCountryCodeInput.setSelectedItem(null);
+		bdInput.setText(null);
 		udVehicleEPassportIdInput.setText(null);
 		udSignInput.setSelectedItem("К");
 		udTransportKindCodeInput.setSelectedItem(null);

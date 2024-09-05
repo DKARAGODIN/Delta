@@ -4,6 +4,10 @@ import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.apache.poi.xwpf.usermodel.IBodyElement;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
@@ -42,6 +46,8 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -105,7 +111,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		}
 	}
 
-	private void saveFile() throws JAXBException, DatatypeConfigurationException, IOException {
+	private void saveFile() throws JAXBException, DatatypeConfigurationException, IOException, ParseException {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Сохранить файл");
 		if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -115,7 +121,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			if (!f.getName().endsWith(".xml")) {
 				f = new File(f.getParentFile(), f.getName() + ".xml");
 			}
-			//createRequest();
+			createRequest(f);
 			try {
 				XmlUtils.marshall(element, f);
 			} catch (JAXBException e) {
@@ -512,107 +518,34 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		}
 	}
 
-	public void createRequest() throws IOException {
-		XWPFDocument document = new XWPFDocument(DeltaFrame.class.getClassLoader().getResourceAsStream("templates/doc.docx"));
-		IBodyElement elem = document.getBodyElements().get(6);
-		XWPFParagraph doc = (XWPFParagraph) elem;
-		XWPFDocument body = (XWPFDocument) doc.getBody();
-		List<IBodyElement> elements = body.getBodyElements();
-		{
-			XWPFParagraph paragraph = (XWPFParagraph) elements.get(6);
-			XWPFRun run = paragraph.getRuns().get(1);
-			run.setText("т " + data.getPayer().getFirst().getPerson().getPersonSurname() + " " +
-					data.getPayer().getFirst().getPerson().getPersonName() + " " +
-					data.getPayer().getFirst().getPerson().getPersonMiddleName(), 0);
-		}
-		{
-			XWPFParagraph paragraph = (XWPFParagraph) elements.get(7);
-			XWPFRun run = paragraph.getRuns().get(0);
-			run.setText("паспорт серии " + data.getPayer().getFirst().getIdentityDoc().getIdentityCardSeries() + " № " +
-					data.getPayer().getFirst().getIdentityDoc().getIdentityCardNumber(), 0);
-		}
-		{
-			XWPFParagraph paragraph = (XWPFParagraph) elements.get(8);
-			XWPFRun run = paragraph.getRuns().get(0);
-			run.setText("выдан " + data.getPayer().getFirst().getIdentityDoc().getOrganizationName(), 0);
-		}
-		{
-			XWPFParagraph paragraph = (XWPFParagraph) elements.get(9);
-			XWPFRun run = paragraph.getRuns().get(0);
-			XMLGregorianCalendar cal = data.getPayer().getFirst().getIdentityDoc().getIdentityCardDate();
-			GregorianCalendar calendar = cal.toGregorianCalendar();
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
-			run.setText(" " + sdf.format(calendar.getTime()) + " ", 0);
-		}
-		{
-			XWPFParagraph paragraph = (XWPFParagraph) elements.get(11);
-			XWPFRun run = paragraph.getRuns().get(0);
-			StringBuilder address = new StringBuilder();
-			address.append(data.getPayer().getFirst().getTPOAddress().getRegion());
-			address.append(" ");
-			address.append(data.getPayer().getFirst().getTPOAddress().getTown());
-			address.append(" ");
-			address.append(data.getPayer().getFirst().getTPOAddress().getStreetHouse());
-			address.append(" ");
-			address.append(data.getPayer().getFirst().getTPOAddress().getHouse());
-			address.append(" ");
-			address.append(data.getPayer().getFirst().getTPOAddress().getRoom());
-			run.setText(address.toString(), 0);
-		}
-		{
-			XWPFParagraph paragraph = (XWPFParagraph) elements.get(13);
-			XWPFRun run = paragraph.getRuns().get(0);
-			run.setText(brokerPhoneInput.getText(), 0);
-		}
-		{
-			XWPFParagraph paragraph = (XWPFParagraph) elements.get(15);
-			XWPFRun run = paragraph.getRuns().get(0);
-			run.setText(brokerEmailInput.getText(), 0);
-		}
-		{
-			XWPFParagraph paragraph = (XWPFParagraph) elements.get(19);
-			{
-				XWPFRun run = paragraph.getRuns().get(5);
-				UtilCollDetailsType utilDetails = data.getUtilCollDetails().getFirst();
-				VehicleType vehicle = utilDetails.getVehicle();
-				run.setText(" " + vehicle.getMark() + " " + vehicle.getModel() + " ", 0);
+	public void createRequest(File xml) throws IOException, ParseException {
+		try (Workbook document = new XSSFWorkbook(DeltaFrame.class.getClassLoader().getResourceAsStream("templates/doc.xlsx"))) {
+			Sheet dov = document.getSheet("ДОВ");
+			Cell bd = dov.getRow(7).getCell(0);
+			if (StringUtils.isNotEmpty(bdInput.getText())) {
+				bd.setCellValue(new SimpleDateFormat("dd.MM.yyyy").parse(bdInput.getText()));
+			} else {
+				bd.setCellValue("");
 			}
-			{
-				XWPFRun run = paragraph.getRuns().get(7);
-				UtilCollDetailsType utilDetails = data.getUtilCollDetails().getFirst();
-				run.setText(" идентификационный номер " + utilDetails.getVINID() + " ", 0);
-			}
-			{
-				XWPFRun run = paragraph.getRuns().get(15);
-				String country = "";
-				String brokerCountryVal = (String) brokerCountry.getSelectedItem();
-				if ("KG".equals(brokerCountryVal))
-					country = "Киргизия";
-				else if ("KZ".equals(brokerCountryVal))
-					country = "Казахстан";
-				else if ("AM".equals(brokerCountryVal))
-					country = "Армения";
-				else if ("ИН".equals(brokerCountryVal))
-					country = "Беларусь";
-				run.setText("территории Республики " + country + " (Беларусь, ", 0);
-			}
-			{
-				XWPFRun run = paragraph.getRuns().get(11);
-				UtilCollDetailsType utilDetails = data.getUtilCollDetails().getFirst();
-				VehicleType vehicle = utilDetails.getVehicle();
-				VehicleProdDateType prodDate = vehicle.getVehicleProdDate();
-				XMLGregorianCalendar cal = prodDate.getManufactureDate();
-				run.setText(" " + cal.getYear(), 0);
+			Cell dovText = dov.getRow(10).getCell(0);
+
+			String brokerFio = StringUtils.defaultString(brokerSurNameInput.getText()) +
+								StringUtils.defaultString(brokerNameInput.getText()) +
+								StringUtils.defaultString(brokerMiddleNameInput.getText());
+			String brokerBd = StringUtils.defaultString(brokerBdInput.getText());
+			String brokerPass = StringUtils.defaultString(brokerPassportInput.getText());
+			String brokerPassIssue = StringUtils.defaultString(brokerPassportIssueInput.getText());
+			String brokerAddress = StringUtils.defaultString(brokerAddressInput.getText());
+
+			dovText.setCellValue(String.format(Constants.dovText, brokerFio, brokerBd, brokerPass, brokerPassIssue, brokerAddress));
+
+			Cell broker = dov.getRow(33).getCell(1);
+			broker.setCellValue(brokerFio);
+
+			File xlsx = new File(xml.getParentFile(), xml.getName().replace(".xml", ".xlsx"));
+			try (FileOutputStream out = new FileOutputStream(xlsx)) {
+				document.write(out);
 			}
 		}
-		{
-			XWPFParagraph paragraph = (XWPFParagraph) elements.get(29);
-			XWPFRun run = paragraph.getRuns().get(3);
-			run.setText(this.brokerSurNameInput.getText() + " " + this.brokerNameInput.getText(), 0);
-		}
-		FileOutputStream fos = new FileOutputStream("request.docx");
-		document.write(fos);
-		fos.close();
-		document.close();
 	}
 }
