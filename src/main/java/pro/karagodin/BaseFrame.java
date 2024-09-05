@@ -2,8 +2,8 @@ package pro.karagodin;
 
 import org.apache.commons.lang3.StringUtils;
 
-import javax.swing.ComboBoxEditor;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -11,18 +11,14 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.text.DateFormatter;
-import javax.swing.text.JTextComponent;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.FocusTraversalPolicy;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -75,6 +71,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField udModelInput = new JTextField();
 	protected final JTextField udEngineVolumeQuantityInput = new JTextField();
 	protected final JComboBox<EngineCode> udEngineModelCodeInput = new JComboBox<>();
+	protected final JCheckBox udElectricEngineYN = new JCheckBox();
+	protected final JCheckBox udPersonalUseYN = new JCheckBox();
 	protected final JTextField udEngineModelInput = new JTextField();
 	protected final JTextField udEnginePowerKvtInput = new JTextField();
 	protected final JTextField udTotalWeightInput = new JTextField();
@@ -144,6 +142,15 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField brokerSurNameInput = new JTextField();
 	protected final JTextField brokerNameInput = new JTextField();
 	protected final JTextField brokerMiddleNameInput = new JTextField();
+	protected final JFormattedTextField brokerBdInput;
+	{
+		DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+		DateFormatter df = new DateFormatter(format);
+		brokerBdInput = new JFormattedTextField(df);
+	}
+	protected final JTextField brokerPassportInput = new JTextField();
+	protected final JTextField brokerPassportIssueInput = new JTextField();
+	protected final JTextField brokerAddressInput = new JTextField();
 	protected final JTextField brokerEmailInput = new JTextField();
 	protected final JTextField brokerPhoneInput = new JTextField();
 	protected final JComboBox<String> brokerCountry = new JComboBox<>();
@@ -162,19 +169,19 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 
 		open.setFont(appFont);
 		open.setSize(150, 20);
-		open.setLocation( 800, 600);
+		open.setLocation( 800, 700);
 		open.addActionListener(this);
 		container.add(open);
 
 		save.setFont(appFont);
 		save.setSize(150, 20);
-		save.setLocation(950, 600);
+		save.setLocation(950, 700);
 		save.addActionListener(this);
 		container.add(save);
 
 		clear.setFont(appFont);
 		clear.setSize(150, 20);
-		clear.setLocation(1100, 600);
+		clear.setLocation(1100, 700);
 		clear.addActionListener(this);
 		container.add(clear);
 
@@ -355,17 +362,22 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(udMarkCodeInput, 250, 500);
 		udMarkCodeInput.addItem(null);
 		MarkKind.cache.values().forEach(udMarkCodeInput::addItem);
-
 		AutoCompletion.enable(udMarkCodeInput);
 
-		addComponentToFrame(new JLabel("Модель ТС"), 5, 540);
-		addComponentToFrame(udModelInput, 250, 540);
-		addComponentToFrame(new JLabel("Объем двигателя"), 5, 560);
-		addComponentToFrame(udEngineVolumeQuantityInput, 250, 560);
-		addComponentToFrame(new JLabel("Код типа двигателя"), 5, 580);
-		addComponentToFrame(udEngineModelCodeInput, 250, 580);
+		addComponentToFrame(new JLabel("Модель ТС"), 5, 520);
+		addComponentToFrame(udModelInput, 250, 520);
+		addComponentToFrame(new JLabel("Объем двигателя"), 5, 540);
+		addComponentToFrame(udEngineVolumeQuantityInput, 250, 540);
+		addComponentToFrame(new JLabel("Код типа двигателя"), 5, 560);
+		addComponentToFrame(udEngineModelCodeInput, 250, 560);
 		udEngineModelCodeInput.addItem(null);
 		EngineCode.cache.values().forEach(udEngineModelCodeInput::addItem);
+
+		addComponentToFrame(new JLabel("Электрический двигатель"), 5, 580);
+		addComponentToFrame(udElectricEngineYN, 250, 580);
+		addComponentToFrame(new JLabel("ТС для личного пользования"), 5, 600);
+		addComponentToFrame(udPersonalUseYN, 250, 600);
+
 		addComponentToFrame(new JLabel("Модель двигателя"), 5, 620);
 		addComponentToFrame(udEngineModelInput, 250, 620);
 		addComponentToFrame(new JLabel("Мощность двигателя КВТ"), 5, 640);
@@ -448,12 +460,21 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(brokerNameInput, 1050, 440);
 		addComponentToFrame(new JLabel("Отчество представителя"), 800, 460);
 		addComponentToFrame(brokerMiddleNameInput, 1050, 460);
-		addComponentToFrame(new JLabel("Контактный e-mail"), 800, 480);
-		addComponentToFrame(brokerEmailInput, 1050, 480);
-		addComponentToFrame(new JLabel("Контактный номер телефона"), 800, 500);
-		addComponentToFrame(brokerPhoneInput, 1050, 500);
-		addComponentToFrame(new JLabel("Страна ввоза"), 800, 520);
-		addComponentToFrame(brokerCountry, 1050, 520);
+		addComponentToFrame(new JLabel("Дата рождения представителя"), 800, 480);
+		addComponentToFrame(brokerBdInput, 1050, 480);
+		addComponentToFrame(new JLabel("Серия и номер паспорта представителя"), 800, 500);
+		addComponentToFrame(brokerPassportInput, 1050, 500);
+		addComponentToFrame(new JLabel("Когда и кем выдан"), 800, 520);
+		addComponentToFrame(brokerPassportIssueInput, 1050, 520);
+		addComponentToFrame(new JLabel("Адрес представителя"), 800, 540);
+		addComponentToFrame(brokerAddressInput, 1050, 540);
+
+		addComponentToFrame(new JLabel("Контактный e-mail"), 800, 560);
+		addComponentToFrame(brokerEmailInput, 1050, 560);
+		addComponentToFrame(new JLabel("Контактный номер телефона"), 800, 580);
+		addComponentToFrame(brokerPhoneInput, 1050, 580);
+		addComponentToFrame(new JLabel("Страна ввоза"), 800, 600);
+		addComponentToFrame(brokerCountry, 1050, 600);
 		brokerCountry.addItem(null);
 		brokerCountry.addItem("KZ");
 		brokerCountry.addItem("KG");
@@ -528,6 +549,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				udModelInput,
 				udEngineVolumeQuantityInput,
 				udEngineModelCodeInput,
+				udElectricEngineYN,
+				udPersonalUseYN,
 				udEngineModelInput,
 				udEnginePowerKvtInput,
 				udTotalWeightInput,
@@ -557,6 +580,10 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				brokerSurNameInput,
 				brokerNameInput,
 				brokerMiddleNameInput,
+				brokerBdInput,
+				brokerPassportInput,
+				brokerPassportIssueInput,
+				brokerAddressInput,
 				brokerEmailInput,
 				brokerPhoneInput,
 				brokerCountry
@@ -571,7 +598,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 						next = c;
 						break;
 					}
-					if (c == aComponent)
+					if (c == aComponent || c == aComponent.getParent())
 						found = true;
 				}
 
@@ -587,7 +614,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				}
 				Component prev = null;
 				for (Component c : orderedComponents) {
-					if (c == aComponent)
+					if (c == aComponent || c == aComponent.getParent())
 						break;
 					prev = c;
 				}
@@ -652,6 +679,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		udTransportKindCodeInput.setSelectedItem(null);
 		udTransportCategoryCodeInput.setText(null);
 		udMarkCodeInput.setSelectedItem(null);
+		udElectricEngineYN.setSelected(false);
+		udPersonalUseYN.setSelected(false);
 		udModelInput.setText(null);
 		udEngineVolumeQuantityInput.setText(null);
 		udEngineModelCodeInput.setSelectedItem(null);
@@ -689,6 +718,10 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		brokerSurNameInput.setText(null);
 		brokerNameInput.setText(null);
 		brokerMiddleNameInput.setText(null);
+		brokerBdInput.setText(null);
+		brokerPassportInput.setText(null);
+		brokerPassportIssueInput.setText(null);
+		brokerAddressInput.setText(null);
 		brokerEmailInput.setText(null);
 		brokerPhoneInput.setText(null);
 		brokerCountry.setSelectedItem(null);

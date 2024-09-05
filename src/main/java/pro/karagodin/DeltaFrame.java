@@ -112,7 +112,10 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			fillDataFromFields();
 			JAXBElement<RecyclingDetailsType> element = new ObjectFactory().createRecyclingDetails(data);
 			File f = fileChooser.getSelectedFile();
-			createRequest();
+			if (!f.getName().endsWith(".xml")) {
+				f = new File(f.getParentFile(), f.getName() + ".xml");
+			}
+			//createRequest();
 			try {
 				XmlUtils.marshall(element, f);
 			} catch (JAXBException e) {
@@ -212,6 +215,16 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 					if (calendar != null) {
 						udManufactureDateInput.setValue(calendar.toGregorianCalendar().getTime());
 					}
+				}
+				if (vehicleType.isEngineTypeIndicator() != null && vehicleType.isEngineTypeIndicator()) {
+					udElectricEngineYN.setSelected(true);
+				} else {
+					udElectricEngineYN.setSelected(false);
+				}
+				if (vehicleType.isPersonalUseIndicator() != null && vehicleType.isPersonalUseIndicator()) {
+					udPersonalUseYN.setSelected(true);
+				} else {
+					udPersonalUseYN.setSelected(false);
 				}
 			}
 			udVinInput.setText(util.getVINID());
@@ -423,6 +436,16 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			engine.setEngineModeCode(((EngineCode) udEngineModelCodeInput.getSelectedItem()).value());
 			engine.setEngineModeName(((EngineCode) udEngineModelCodeInput.getSelectedItem()).description());
 		}
+		if (udElectricEngineYN.isSelected()) {
+			vehicleType.setEngineTypeIndicator(true);
+		} else {
+			vehicleType.setEngineTypeIndicator(false);
+		}
+		if (udPersonalUseYN.isSelected()) {
+			vehicleType.setPersonalUseIndicator(true);
+		} else {
+			vehicleType.setPersonalUseIndicator(false);
+		}
 		if (StringUtils.isNotEmpty(udEngineModelInput.getText()))
 			engine.setEngineModel(udEngineModelInput.getText());
 		if (StringUtils.isNotEmpty(udEnginePowerKvtInput.getText()))
@@ -490,7 +513,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 	}
 
 	public void createRequest() throws IOException {
-		XWPFDocument document = new XWPFDocument(OfficeUtils.class.getClassLoader().getResourceAsStream("templates/request.docx"));
+		XWPFDocument document = new XWPFDocument(DeltaFrame.class.getClassLoader().getResourceAsStream("templates/doc.docx"));
 		IBodyElement elem = document.getBodyElements().get(6);
 		XWPFParagraph doc = (XWPFParagraph) elem;
 		XWPFDocument body = (XWPFDocument) doc.getBody();
@@ -587,7 +610,9 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			XWPFRun run = paragraph.getRuns().get(3);
 			run.setText(this.brokerSurNameInput.getText() + " " + this.brokerNameInput.getText(), 0);
 		}
-		document.write(new FileOutputStream("Hello.docx"));
+		FileOutputStream fos = new FileOutputStream("request.docx");
+		document.write(fos);
+		fos.close();
 		document.close();
 	}
 }
