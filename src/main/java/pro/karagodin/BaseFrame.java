@@ -89,6 +89,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		udManufactureDateInput = new JFormattedTextField(df);
 	}
 	protected final JTextField udVinInput = new JTextField();
+	protected final JLabel udVinLabel = new JLabel();
 	protected final JTextField payImportCustomsDutyInput = new JTextField();
 	protected final JTextField payExciseInput = new JTextField();
 	protected final JTextField payVatInput = new JTextField();
@@ -160,6 +161,20 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField brokerEmailInput = new JTextField();
 	protected final JTextField brokerPhoneInput = new JTextField();
 	protected final JComboBox<String> brokerCountry = new JComboBox<>();
+	protected final JFormattedTextField brokerCalcDate;
+	{
+		DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+		DateFormatter df = new DateFormatter(format);
+		brokerCalcDate = new JFormattedTextField(df);
+	}
+	protected final JTextField dt = new JTextField();
+	protected final JFormattedTextField paymentDate;
+	{
+		DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
+		DateFormatter df = new DateFormatter(format);
+		paymentDate = new JFormattedTextField(df);
+	}
+	protected final JTextField paymentNumber = new JTextField();
 
 	private final List<JLabel> labels;
 	private final List<Runnable> checkers;
@@ -175,19 +190,19 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 
 		open.setFont(appFont);
 		open.setSize(150, 20);
-		open.setLocation( 800, 700);
+		open.setLocation( 800, 800);
 		open.addActionListener(this);
 		container.add(open);
 
 		save.setFont(appFont);
 		save.setSize(150, 20);
-		save.setLocation(950, 700);
+		save.setLocation(950, 800);
 		save.addActionListener(this);
 		container.add(save);
 
 		clear.setFont(appFont);
 		clear.setSize(150, 20);
-		clear.setLocation(1100, 700);
+		clear.setLocation(1100, 800);
 		clear.addActionListener(this);
 		container.add(clear);
 
@@ -397,6 +412,23 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(udManufactureDateInput, 250, 680);
 		addComponentToFrame(new JLabel("Идентификационный номер"), 5, 700);
 		addComponentToFrame(udVinInput, 250, 700);
+		addComponentToFrame(udVinLabel, 500, 700);
+		udVinLabel.setSize(300, 20);
+		Runnable vinChecker = () -> {
+			String value = udVinInput.getText();
+			if (value != null && value.length() > 17) {
+				udVinLabel.setText("Превышена длинна поля 17");
+			} else {
+				udVinLabel.setText("");
+			}
+		};
+		udVinInput.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				vinChecker.run();
+			}
+		});
+
 		//Раздел 3
 		addComponentToFrame(new JLabel("Разница в таможенной пошлине"), 5, 740);
 		addComponentToFrame(payImportCustomsDutyInput, 250, 740);
@@ -490,8 +522,17 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		brokerCountry.addItem("AM");
 		brokerCountry.addItem("BY");
 
-		labels = List.of(surNameLabel, nameLabel, innLabel);
-		checkers = List.of(surNameChecker, nameChecker, innChecker);
+		addComponentToFrame(new JLabel("Дата расчета"), 800, 620);
+		addComponentToFrame(brokerCalcDate, 1050, 620);
+		addComponentToFrame(new JLabel("ДТ/ТПО"), 800, 640);
+		addComponentToFrame(dt, 1050, 640);
+		addComponentToFrame(new JLabel("Подтверждение уплаты УС. Номер"), 800, 660);
+		addComponentToFrame(paymentNumber, 1050, 660);
+		addComponentToFrame(new JLabel("Подтверждение уплаты УС. Дата"), 800, 680);
+		addComponentToFrame(paymentDate, 1050, 680);
+
+		labels = List.of(surNameLabel, nameLabel, innLabel, udVinLabel);
+		checkers = List.of(surNameChecker, nameChecker, innChecker, vinChecker);
 
 		container.setFocusTraversalPolicyProvider(true);
 		container.setFocusTraversalPolicy(setUpTraversalPolicy());
@@ -596,7 +637,11 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				brokerAddressInput,
 				brokerEmailInput,
 				brokerPhoneInput,
-				brokerCountry
+				brokerCountry,
+				brokerCalcDate,
+				dt,
+				paymentNumber,
+				paymentDate
 			);
 
 			@Override
@@ -736,5 +781,9 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		brokerEmailInput.setText(null);
 		brokerPhoneInput.setText(null);
 		brokerCountry.setSelectedItem(null);
+		brokerCalcDate.setText(null);
+		dt.setText(null);
+		paymentDate.setText(null);
+		paymentNumber.setText(null);
 	}
 }
