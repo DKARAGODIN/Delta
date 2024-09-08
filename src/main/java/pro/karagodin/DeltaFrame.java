@@ -43,6 +43,8 @@ import java.io.StringReader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.math.RoundingMode;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -75,6 +77,10 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				clearFields();
 				data = null;
 				runAllCheckers();
+			} else if (event.getSource() == saveBroker) {
+				saveBroker();
+			} else if (event.getSource() == openBroker) {
+				openBroker();
 			}
 		} catch (Exception e) {
 			List<String> messages = new ArrayList<>();
@@ -106,6 +112,56 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			d.setVisible(true);
 		}
 	}
+
+	private void saveBroker() throws IOException {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Сохранить информацию о брокере");
+		if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+			File f = fileChooser.getSelectedFile();
+
+			StringBuilder sb =new StringBuilder();
+			sb.append(StringUtils.defaultString(brokerSurNameInput.getText()));
+			sb.append(System.lineSeparator());
+			sb.append(StringUtils.defaultString(brokerNameInput.getText()));
+			sb.append(System.lineSeparator());
+			sb.append(StringUtils.defaultString(brokerMiddleNameInput.getText()));
+			sb.append(System.lineSeparator());
+			sb.append(StringUtils.defaultString(brokerBdInput.getText()));
+			sb.append(System.lineSeparator());
+			sb.append(StringUtils.defaultString(brokerPassportInput.getText()));
+			sb.append(System.lineSeparator());
+			sb.append(StringUtils.defaultString(brokerPassportIssueInput.getText()));
+			sb.append(System.lineSeparator());
+			sb.append(StringUtils.defaultString(brokerAddressInput.getText()));
+			sb.append(System.lineSeparator());
+			sb.append(StringUtils.defaultString(brokerEmailInput.getText()));
+			sb.append(System.lineSeparator());
+			sb.append(StringUtils.defaultString(brokerPhoneInput.getText()));
+			sb.append(System.lineSeparator());
+
+			Files.writeString(f.toPath(), sb.toString(), StandardCharsets.UTF_8);
+		}
+	}
+
+	private void openBroker() throws IOException {
+		JFileChooser fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Выберите файл");
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fileChooser.setAcceptAllFileFilterUsed(false);
+		if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+			List<String> str = Files.readAllLines(fileChooser.getSelectedFile().toPath(), StandardCharsets.UTF_8);
+			brokerSurNameInput.setText(str.get(0));
+			brokerNameInput.setText(str.get(1));
+			brokerMiddleNameInput.setText(str.get(2));
+			brokerBdInput.setText(str.get(3));
+			brokerPassportInput.setText(str.get(4));
+			brokerPassportIssueInput.setText(str.get(5));
+			brokerAddressInput.setText(str.get(6));
+			brokerEmailInput.setText(str.get(7));
+			brokerPhoneInput.setText(str.get(8));
+		}
+	}
+
 
 	private void saveFile() throws JAXBException, DatatypeConfigurationException, IOException, ParseException {
 		JFileChooser fileChooser = new JFileChooser();
@@ -545,7 +601,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			String payerAddress = addressSb.toString();
 
 
-			String brokerCountryStr = brokerCountry.getSelectedItem() == null ? "" : (String) brokerCountry.getSelectedItem();
+			String brokerCountryStr = countryOfImport.getSelectedItem() == null ? "" : (String) countryOfImport.getSelectedItem();
 			String c = "";
 			if ("KZ".equals(brokerCountryStr)) {
 				c = "Казахстан";
@@ -561,7 +617,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				Sheet dov = document.getSheet("ДОВ");
 
 				Cell date = dov.getRow(0).getCell(0);
-				date.setCellValue(StringUtils.defaultString(brokerCalcDate.getText()));
+				date.setCellValue(StringUtils.defaultString(calculationDate.getText()));
 
 				Cell payer = dov.getRow(6).getCell(1);
 				payer.setCellValue(payerFio);
@@ -668,7 +724,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			{
 				Sheet calc = document.getSheet("Расчет");
 				Cell calcDate = calc.getRow(6).getCell(12);
-				calcDate.setCellValue(StringUtils.defaultString(brokerCalcDate.getText()));
+				calcDate.setCellValue(StringUtils.defaultString(calculationDate.getText()));
 
 				Cell vin = calc.getRow(11).getCell(1);
 				vin.setCellValue(StringUtils.defaultString(udVinInput.getText()));
@@ -736,7 +792,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				epts.setCellValue(StringUtils.defaultString(udVehicleEPassportIdInput.getText()));
 
 				Cell date = calc.getRow(18).createCell(7);
-				date.setCellValue(StringUtils.defaultString(brokerCalcDate.getText()));
+				date.setCellValue(StringUtils.defaultString(calculationDate.getText()));
 
 				Cell payer = calc.getRow(19).getCell(7);
 				payer.setCellValue(payerFio);
@@ -804,7 +860,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				broker.setCellValue(brokerFio);
 
 				Cell calcDate2 = calc.getRow(36).getCell(12);
-				calcDate2.setCellValue(StringUtils.defaultString(brokerCalcDate.getText()));
+				calcDate2.setCellValue(StringUtils.defaultString(calculationDate.getText()));
 			}
 
 			document.setForceFormulaRecalculation(true);

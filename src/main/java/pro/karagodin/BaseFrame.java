@@ -30,6 +30,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JButton save = new JButton("Сохранить XML");
 	protected final JButton open = new JButton("Открыть XML");
 	protected final JButton clear = new JButton("Очистить");
+	protected final JButton saveBroker = new JButton("Сохранить Брокера");
+	protected final JButton openBroker = new JButton("Открыть Брокера");
 
 	protected final JTextField surNameInput = new JTextField();
 	protected final JLabel surNameLabel = new JLabel();
@@ -160,12 +162,12 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField brokerAddressInput = new JTextField();
 	protected final JTextField brokerEmailInput = new JTextField();
 	protected final JTextField brokerPhoneInput = new JTextField();
-	protected final JComboBox<String> brokerCountry = new JComboBox<>();
-	protected final JFormattedTextField brokerCalcDate;
+	protected final JComboBox<String> countryOfImport = new JComboBox<>();
+	protected final JFormattedTextField calculationDate;
 	{
 		DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 		DateFormatter df = new DateFormatter(format);
-		brokerCalcDate = new JFormattedTextField(df);
+		calculationDate = new JFormattedTextField(df);
 	}
 	protected final JTextField dt = new JTextField();
 	protected final JFormattedTextField paymentDate;
@@ -205,6 +207,19 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		clear.setLocation(1100, 800);
 		clear.addActionListener(this);
 		container.add(clear);
+
+		openBroker.setFont(appFont);
+		openBroker.setSize(175, 20);
+		openBroker.setLocation( 800, 820);
+		openBroker.addActionListener(this);
+		container.add(openBroker);
+
+		saveBroker.setFont(appFont);
+		saveBroker.setSize(175, 20);
+		saveBroker.setLocation(975, 820);
+		saveBroker.addActionListener(this);
+		container.add(saveBroker);
+
 
 		// Фамилия плательщика
 		addComponentToFrame(new JLabel("Фамилия плательщика"), 5, 0);
@@ -495,41 +510,41 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(doc5DateInput, 1050, 380);
 
 		//Раздел 5
-		addComponentToFrame(new JLabel("Фамилия представителя"), 800, 420);
-		addComponentToFrame(brokerSurNameInput, 1050, 420);
-		addComponentToFrame(new JLabel("Имя представителя"), 800, 440);
-		addComponentToFrame(brokerNameInput, 1050, 440);
-		addComponentToFrame(new JLabel("Отчество представителя"), 800, 460);
-		addComponentToFrame(brokerMiddleNameInput, 1050, 460);
-		addComponentToFrame(new JLabel("Дата рождения представителя"), 800, 480);
-		addComponentToFrame(brokerBdInput, 1050, 480);
-		addComponentToFrame(new JLabel("Серия и номер паспорта представителя"), 800, 500);
-		addComponentToFrame(brokerPassportInput, 1050, 500);
-		addComponentToFrame(new JLabel("Когда и кем выдан"), 800, 520);
-		addComponentToFrame(brokerPassportIssueInput, 1050, 520);
-		addComponentToFrame(new JLabel("Адрес представителя"), 800, 540);
-		addComponentToFrame(brokerAddressInput, 1050, 540);
+		addComponentToFrame(new JLabel("Фамилия представителя"), 800, 540);
+		addComponentToFrame(brokerSurNameInput, 1050, 540);
+		addComponentToFrame(new JLabel("Имя представителя"), 800, 560);
+		addComponentToFrame(brokerNameInput, 1050, 560);
+		addComponentToFrame(new JLabel("Отчество представителя"), 800, 580);
+		addComponentToFrame(brokerMiddleNameInput, 1050, 580);
+		addComponentToFrame(new JLabel("Дата рождения представителя"), 800, 600);
+		addComponentToFrame(brokerBdInput, 1050, 600);
+		addComponentToFrame(new JLabel("Серия и номер паспорта представителя"), 800, 620);
+		addComponentToFrame(brokerPassportInput, 1050, 620);
+		addComponentToFrame(new JLabel("Когда и кем выдан"), 800, 640);
+		addComponentToFrame(brokerPassportIssueInput, 1050, 640);
+		addComponentToFrame(new JLabel("Адрес представителя"), 800, 660);
+		addComponentToFrame(brokerAddressInput, 1050, 660);
+		addComponentToFrame(new JLabel("Контактный e-mail"), 800, 680);
+		addComponentToFrame(brokerEmailInput, 1050, 680);
+		addComponentToFrame(new JLabel("Контактный номер телефона"), 800, 700);
+		addComponentToFrame(brokerPhoneInput, 1050, 700);
 
-		addComponentToFrame(new JLabel("Контактный e-mail"), 800, 560);
-		addComponentToFrame(brokerEmailInput, 1050, 560);
-		addComponentToFrame(new JLabel("Контактный номер телефона"), 800, 580);
-		addComponentToFrame(brokerPhoneInput, 1050, 580);
-		addComponentToFrame(new JLabel("Страна ввоза"), 800, 600);
-		addComponentToFrame(brokerCountry, 1050, 600);
-		brokerCountry.addItem(null);
-		brokerCountry.addItem("KZ");
-		brokerCountry.addItem("KG");
-		brokerCountry.addItem("AM");
-		brokerCountry.addItem("BY");
+		addComponentToFrame(new JLabel("Страна ввоза"), 800, 420);
+		addComponentToFrame(countryOfImport, 1050, 420);
+		countryOfImport.addItem(null);
+		countryOfImport.addItem("KZ");
+		countryOfImport.addItem("KG");
+		countryOfImport.addItem("AM");
+		countryOfImport.addItem("BY");
 
-		addComponentToFrame(new JLabel("Дата расчета"), 800, 620);
-		addComponentToFrame(brokerCalcDate, 1050, 620);
-		addComponentToFrame(new JLabel("ДТ/ТПО"), 800, 640);
-		addComponentToFrame(dt, 1050, 640);
-		addComponentToFrame(new JLabel("Подтверждение уплаты УС. Номер"), 800, 660);
-		addComponentToFrame(paymentNumber, 1050, 660);
-		addComponentToFrame(new JLabel("Подтверждение уплаты УС. Дата"), 800, 680);
-		addComponentToFrame(paymentDate, 1050, 680);
+		addComponentToFrame(new JLabel("Дата расчета"), 800, 440);
+		addComponentToFrame(calculationDate, 1050, 440);
+		addComponentToFrame(new JLabel("ДТ/ТПО"), 800, 460);
+		addComponentToFrame(dt, 1050, 460);
+		addComponentToFrame(new JLabel("Подтверждение уплаты УС. Номер"), 800, 480);
+		addComponentToFrame(paymentNumber, 1050, 480);
+		addComponentToFrame(new JLabel("Подтверждение уплаты УС. Дата"), 800, 500);
+		addComponentToFrame(paymentDate, 1050, 500);
 
 		labels = List.of(surNameLabel, nameLabel, innLabel, udVinLabel);
 		checkers = List.of(surNameChecker, nameChecker, innChecker, vinChecker);
@@ -628,6 +643,11 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				doc5KindCodeInput,
 				doc5NumberInput,
 				doc5DateInput,
+					countryOfImport,
+					calculationDate,
+				dt,
+				paymentNumber,
+				paymentDate,
 				brokerSurNameInput,
 				brokerNameInput,
 				brokerMiddleNameInput,
@@ -636,12 +656,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				brokerPassportIssueInput,
 				brokerAddressInput,
 				brokerEmailInput,
-				brokerPhoneInput,
-				brokerCountry,
-				brokerCalcDate,
-				dt,
-				paymentNumber,
-				paymentDate
+				brokerPhoneInput
 			);
 
 			@Override
@@ -771,17 +786,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		doc5NameInput.setText(null);
 		doc5NumberInput.setText(null);
 		doc5DateInput.setText(null);
-		brokerSurNameInput.setText(null);
-		brokerNameInput.setText(null);
-		brokerMiddleNameInput.setText(null);
-		brokerBdInput.setText(null);
-		brokerPassportInput.setText(null);
-		brokerPassportIssueInput.setText(null);
-		brokerAddressInput.setText(null);
-		brokerEmailInput.setText(null);
-		brokerPhoneInput.setText(null);
-		brokerCountry.setSelectedItem(null);
-		brokerCalcDate.setText(null);
+		countryOfImport.setSelectedItem(null);
+		calculationDate.setText(null);
 		dt.setText(null);
 		paymentDate.setText(null);
 		paymentNumber.setText(null);
