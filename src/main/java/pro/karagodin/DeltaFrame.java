@@ -167,6 +167,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Сохранить файл");
 		if (fileChooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+			upperCase();
 			fillDataFromFields();
 			JAXBElement<RecyclingDetailsType> element = new ObjectFactory().createRecyclingDetails(data);
 			File f = fileChooser.getSelectedFile();
@@ -538,10 +539,6 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				utilDetails.setBorderCrossingDate(d2);
 			}
 		}
-		if (StringUtils.isNotEmpty(payDutyTaxFeeRateInput.getText()))
-			utilDetails.setDutyTaxFeeRateValue(new BigDecimal(payDutyTaxFeeRateInput.getText()));
-		if (StringUtils.isNotEmpty(payCoefficientInput.getText()))
-			utilDetails.setCoefficient(new BigDecimal(payCoefficientInput.getText()));
 
 		List<AttachedDocumentType> newDocuments = new ArrayList<>();
 		fillDoc(newDocuments, doc1KindCodeInput, doc1NameInput, doc1NumberInput, doc1DateInput);
@@ -571,7 +568,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 	}
 
 	public void createRequest(File xml) throws IOException, ParseException {
-		try (Workbook document = new XSSFWorkbook(DeltaFrame.class.getClassLoader().getResourceAsStream("templates/doc.xlsx"))) {
+		try (Workbook document = new XSSFWorkbook(Thread.currentThread().getContextClassLoader().getResourceAsStream("templates/doc.xlsx"))) {
 
 			String brokerFio = StringUtils.defaultString(brokerSurNameInput.getText()) + " " +
 					StringUtils.defaultString(brokerNameInput.getText()) + " " +
@@ -686,7 +683,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				Cell model = zayava.getRow(14).getCell(10);
 				model.setCellValue(StringUtils.defaultString(udModelInput.getText()));
 
-				Cell vin = zayava.getRow(14).getCell(45);
+				Cell vin = zayava.getRow(14).getCell(44);
 				vin.setCellValue(StringUtils.defaultString(udVinInput.getText()));
 
 				Cell dateOfProduction = zayava.getRow(15).getCell(7);
@@ -784,6 +781,9 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 
 					Cell total = calc.getRow(11).getCell(14);
 					total.setCellValue(val.setScale(2, RoundingMode.HALF_UP).toString());
+				} else {
+					Cell total = calc.getRow(11).getCell(14);
+					total.setCellValue(mul.setScale(2, RoundingMode.HALF_UP).toString());
 				}
 				Cell total = calc.getRow(11).getCell(13);
 				total.setCellFormula(mul.setScale(2, RoundingMode.HALF_UP).toString());

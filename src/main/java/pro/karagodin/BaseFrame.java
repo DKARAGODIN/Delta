@@ -73,9 +73,11 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField udVehicleEPassportIdInput = new JTextField();
 	protected final JComboBox<String> udSignInput = new JComboBox<>();
 	protected final JComboBox<TransportKind> udTransportKindCodeInput = new JComboBox<>();
-	protected final JTextField udTransportCategoryCodeInput = new JTextField();
-	protected final JComboBox<MarkKind> udMarkCodeInput = new JComboBox<>();
 
+	protected final JTextField udTransportCategoryCodeInput = new JTextField();
+	protected final JLabel udTransportCategoryCodeLabel = new JLabel();
+
+	protected final JComboBox<MarkKind> udMarkCodeInput = new JComboBox<>();
 	protected final JTextField udModelInput = new JTextField();
 	protected final JTextField udEngineVolumeQuantityInput = new JTextField();
 	protected final JComboBox<EngineCode> udEngineModelCodeInput = new JComboBox<>();
@@ -357,10 +359,15 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(houseNumberInput, 250, 200);
 		addComponentToFrame(new JLabel("Номер квартиры"), 5, 220);
 		addComponentToFrame(roomInput, 250, 220);
+
 		addComponentToFrame(new JLabel("Наименование документа УЛ"), 5, 240);
-		addComponentToFrame(identityCardCodeInput, 250, 240);
+		identityCardCodeInput.setFont(appFont);
+		identityCardCodeInput.setSize(500, 20);
+		identityCardCodeInput.setLocation(250, 240);
+		getContentPane().add(identityCardCodeInput);
 		identityCardCodeInput.addItem(null);
 		IdentityCardCode.cache.values().forEach(identityCardCodeInput::addItem);
+
 		addComponentToFrame(new JLabel("Серия документа УЛ"), 5, 260);
 		addComponentToFrame(identityCardSeriesInput, 250, 260);
 		addComponentToFrame(new JLabel("Номер документа УЛ"), 5, 280);
@@ -397,6 +404,26 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		TransportKind.cache.values().forEach(udTransportKindCodeInput::addItem);
 		addComponentToFrame(new JLabel("Категория ТС"), 5, 480);
 		addComponentToFrame(udTransportCategoryCodeInput, 250, 480);
+		addComponentToFrame(udTransportCategoryCodeLabel, 500, 480);
+		Runnable categoryChecker = () -> {
+			String value = udTransportCategoryCodeInput.getText();
+			if (StringUtils.isEmpty(value)) {
+				udTransportCategoryCodeLabel.setText("");
+			} else {
+				if (value.matches("^[a-zA-Z0-9.]+$")) {
+					udTransportCategoryCodeLabel.setText("");
+				} else {
+					udTransportCategoryCodeLabel.setText("Использованы не латинские символы");
+				}
+			}
+		};
+		udTransportCategoryCodeInput.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				categoryChecker.run();
+			}
+		});
+
 		addComponentToFrame(new JLabel("Код марки ТС"), 5, 500);
 		addComponentToFrame(udMarkCodeInput, 250, 500);
 		udMarkCodeInput.addItem(null);
@@ -546,8 +573,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(new JLabel("Подтверждение уплаты УС. Дата"), 800, 500);
 		addComponentToFrame(paymentDate, 1050, 500);
 
-		labels = List.of(surNameLabel, nameLabel, innLabel, udVinLabel);
-		checkers = List.of(surNameChecker, nameChecker, innChecker, vinChecker);
+		labels = List.of(surNameLabel, nameLabel, innLabel, udTransportCategoryCodeLabel, udVinLabel);
+		checkers = List.of(surNameChecker, nameChecker, innChecker, categoryChecker, vinChecker);
 
 		container.setFocusTraversalPolicyProvider(true);
 		container.setFocusTraversalPolicy(setUpTraversalPolicy());
@@ -643,8 +670,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 				doc5KindCodeInput,
 				doc5NumberInput,
 				doc5DateInput,
-					countryOfImport,
-					calculationDate,
+				countryOfImport,
+				calculationDate,
 				dt,
 				paymentNumber,
 				paymentDate,
@@ -791,5 +818,68 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		dt.setText(null);
 		paymentDate.setText(null);
 		paymentNumber.setText(null);
+	}
+
+	protected void upperCase() {
+		surNameInput.setText(StringUtils.defaultString(surNameInput.getText()).toUpperCase().trim());
+		nameInput.setText(StringUtils.defaultString(nameInput.getText()).toUpperCase().trim());
+		middleNameInput.setText(StringUtils.defaultString(middleNameInput.getText()).toUpperCase().trim());
+		innInput.setText(StringUtils.defaultString(innInput.getText()).toUpperCase().trim());
+		countryNameInput.setText(StringUtils.defaultString(countryNameInput.getText()).toUpperCase().trim());
+		regionNameInput.setText(StringUtils.defaultString(regionNameInput.getText()).toUpperCase().trim());
+		townNameInput.setText(StringUtils.defaultString(townNameInput.getText()).toUpperCase().trim());
+		streetNameInput.setText(StringUtils.defaultString(streetNameInput.getText()).toUpperCase().trim());
+		houseNumberInput.setText(StringUtils.defaultString(houseNumberInput.getText()).toUpperCase().trim());
+		roomInput.setText(StringUtils.defaultString(roomInput.getText()).toUpperCase().trim());
+		identityCardSeriesInput.setText(StringUtils.defaultString(identityCardSeriesInput.getText()).toUpperCase().trim());
+		identityCardNumberInput.setText(StringUtils.defaultString(identityCardNumberInput.getText()).toUpperCase().trim());
+		identityCardDateInput.setText(StringUtils.defaultString(identityCardDateInput.getText()).toUpperCase().trim());
+		identityOrganisationNameInput.setText(StringUtils.defaultString(identityOrganisationNameInput.getText()).toUpperCase().trim());
+		identityIssuerCodeInput.setText(StringUtils.defaultString(identityIssuerCodeInput.getText()).toUpperCase().trim());
+		bdInput.setText(StringUtils.defaultString(bdInput.getText()).toUpperCase().trim());
+		udVehicleEPassportIdInput.setText(StringUtils.defaultString(udVehicleEPassportIdInput.getText()).toUpperCase().trim());
+		udTransportCategoryCodeInput.setText(StringUtils.defaultString(udTransportCategoryCodeInput.getText()).toUpperCase().trim());
+		udModelInput.setText(StringUtils.defaultString(udModelInput.getText()).toUpperCase().trim());
+		udEngineVolumeQuantityInput.setText(StringUtils.defaultString(udEngineVolumeQuantityInput.getText()).toUpperCase().trim());
+		udEngineModelInput.setText(StringUtils.defaultString(udEngineModelInput.getText()).toUpperCase().trim());
+		udEnginePowerKvtInput.setText(StringUtils.defaultString(udEnginePowerKvtInput.getText()).toUpperCase().trim());
+		udTotalWeightInput.setText(StringUtils.defaultString(udTotalWeightInput.getText()).toUpperCase().trim());
+		udManufactureDateInput.setText(StringUtils.defaultString(udManufactureDateInput.getText()).toUpperCase().trim());
+		udVinInput.setText(StringUtils.defaultString(udVinInput.getText()).toUpperCase().trim());
+		payImportCustomsDutyInput.setText(StringUtils.defaultString(payImportCustomsDutyInput.getText()).toUpperCase().trim());
+		payExciseInput.setText(StringUtils.defaultString(payExciseInput.getText()).toUpperCase().trim());
+		payVatInput.setText(StringUtils.defaultString(payVatInput.getText()).toUpperCase().trim());
+		payBorderCrossingDateInput.setText(StringUtils.defaultString(payBorderCrossingDateInput.getText()).toUpperCase().trim());
+		payDutyTaxFeeRateInput.setText(StringUtils.defaultString(payDutyTaxFeeRateInput.getText()).toUpperCase().trim());
+		payCoefficientInput.setText(StringUtils.defaultString(payCoefficientInput.getText()).toUpperCase().trim());
+		doc1NameInput.setText(StringUtils.defaultString(doc1NameInput.getText()).toUpperCase().trim());
+		doc1NumberInput.setText(StringUtils.defaultString(doc1NumberInput.getText()).toUpperCase().trim());
+		doc1DateInput.setText(StringUtils.defaultString(doc1DateInput.getText()).toUpperCase().trim());
+		doc2NameInput.setText(StringUtils.defaultString(doc2NameInput.getText()).toUpperCase().trim());
+		doc2NumberInput.setText(StringUtils.defaultString(doc2NumberInput.getText()).toUpperCase().trim());
+		doc2DateInput.setText(StringUtils.defaultString(doc2DateInput.getText()).toUpperCase().trim());
+		doc3NameInput.setText(StringUtils.defaultString(doc3NameInput.getText()).toUpperCase().trim());
+		doc3NumberInput.setText(StringUtils.defaultString(doc3NumberInput.getText()).toUpperCase().trim());
+		doc3DateInput.setText(StringUtils.defaultString(doc3DateInput.getText()).toUpperCase().trim());
+		doc4NameInput.setText(StringUtils.defaultString(doc4NameInput.getText()).toUpperCase().trim());
+		doc4NumberInput.setText(StringUtils.defaultString(doc4NumberInput.getText()).toUpperCase().trim());
+		doc4DateInput.setText(StringUtils.defaultString(doc4DateInput.getText()).toUpperCase().trim());
+		doc5NameInput.setText(StringUtils.defaultString(doc5NameInput.getText()).toUpperCase().trim());
+		doc5NumberInput.setText(StringUtils.defaultString(doc5NumberInput.getText()).toUpperCase().trim());
+		doc5DateInput.setText(StringUtils.defaultString(doc5DateInput.getText()).toUpperCase().trim());
+		calculationDate.setText(StringUtils.defaultString(calculationDate.getText()).toUpperCase().trim());
+		dt.setText(StringUtils.defaultString(dt.getText()).toUpperCase().trim());
+		paymentDate.setText(StringUtils.defaultString(paymentDate.getText()).toUpperCase().trim());
+		paymentNumber.setText(StringUtils.defaultString(paymentNumber.getText()).toUpperCase().trim());
+
+		brokerSurNameInput.setText(StringUtils.defaultString(brokerSurNameInput.getText()).toUpperCase().trim());
+		brokerNameInput.setText(StringUtils.defaultString(brokerNameInput.getText()).toUpperCase().trim());
+		brokerMiddleNameInput.setText(StringUtils.defaultString(brokerMiddleNameInput.getText()).toUpperCase().trim());
+		brokerBdInput.setText(StringUtils.defaultString(brokerBdInput.getText()).toUpperCase().trim());
+		brokerPassportInput.setText(StringUtils.defaultString(brokerPassportInput.getText()).toUpperCase().trim());
+		brokerPassportIssueInput.setText(StringUtils.defaultString(brokerPassportIssueInput.getText()).toUpperCase().trim());
+		brokerAddressInput.setText(StringUtils.defaultString(brokerAddressInput.getText()).toUpperCase().trim());
+		brokerEmailInput.setText(StringUtils.defaultString(brokerEmailInput.getText()).toUpperCase().trim());
+		brokerPhoneInput.setText(StringUtils.defaultString(brokerPhoneInput.getText()).toUpperCase().trim());
 	}
 }
