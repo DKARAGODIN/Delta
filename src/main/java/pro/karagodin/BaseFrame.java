@@ -20,6 +20,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -86,6 +87,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 	protected final JTextField udEngineModelInput = new JTextField();
 	protected final JTextField udEnginePowerKvtInput = new JTextField();
 	protected final JTextField udTotalWeightInput = new JTextField();
+	protected final JLabel udTotalWeightLabel = new JLabel();
 	protected final JFormattedTextField udManufactureDateInput;
 	{
 		DateFormat format = new SimpleDateFormat("dd.MM.yyyy");
@@ -103,6 +105,7 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		DateFormatter df = new DateFormatter(format);
 		payBorderCrossingDateInput = new JFormattedTextField(df);
 	}
+	protected final JLabel payBorderCrossingDateLabel = new JLabel();
 	protected final JTextField payDutyTaxFeeRateInput = new JTextField();
 	protected final JTextField payCoefficientInput = new JTextField();
 	protected final JComboBox<String> doc1KindCodeInput = new JComboBox<>();
@@ -405,10 +408,11 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(new JLabel("Категория ТС"), 5, 480);
 		addComponentToFrame(udTransportCategoryCodeInput, 250, 480);
 		addComponentToFrame(udTransportCategoryCodeLabel, 500, 480);
+		udTransportCategoryCodeLabel.setText("Обязательное поле");
 		Runnable categoryChecker = () -> {
 			String value = udTransportCategoryCodeInput.getText();
 			if (StringUtils.isEmpty(value)) {
-				udTransportCategoryCodeLabel.setText("");
+				udTransportCategoryCodeLabel.setText("Обязательное поле");
 			} else {
 				if (value.matches("^[a-zA-Z0-9.]+$")) {
 					udTransportCategoryCodeLabel.setText("");
@@ -450,15 +454,36 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(udEnginePowerKvtInput, 250, 640);
 		addComponentToFrame(new JLabel("Максимальная масса ТОНН"), 5, 660);
 		addComponentToFrame(udTotalWeightInput, 250, 660);
+		addComponentToFrame(udTotalWeightLabel, 500, 660);
+		udTotalWeightLabel.setText("Обязательное поле");
+		Runnable udTotalWeightChecker = () -> {
+			String value = udTotalWeightInput.getText();
+			if (StringUtils.isEmpty(value)) {
+				udTotalWeightLabel.setText("Обязательное поле");
+			} else {
+				udTotalWeightLabel.setText("");
+			}
+		};
+		udTotalWeightInput.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				udTotalWeightChecker.run();
+			}
+		});
+
+
 		addComponentToFrame(new JLabel("Дата производства (dd.MM.yyyy)"), 5, 680);
 		addComponentToFrame(udManufactureDateInput, 250, 680);
 		addComponentToFrame(new JLabel("Идентификационный номер"), 5, 700);
 		addComponentToFrame(udVinInput, 250, 700);
 		addComponentToFrame(udVinLabel, 500, 700);
 		udVinLabel.setSize(300, 20);
+		udVinLabel.setText("Обязательное поле");
 		Runnable vinChecker = () -> {
 			String value = udVinInput.getText();
-			if (value != null && value.length() > 17) {
+			if (StringUtils.isEmpty(value)) {
+				udVinLabel.setText("Обязательное поле");
+			} else if (value.length() > 17) {
 				udVinLabel.setText("Превышена длинна поля 17");
 			} else {
 				udVinLabel.setText("");
@@ -480,6 +505,23 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(payVatInput, 250, 780);
 		addComponentToFrame(new JLabel("Дата пересечения границы (dd.MM.yyyy)"), 5, 800);
 		addComponentToFrame(payBorderCrossingDateInput, 250, 800);
+		addComponentToFrame(payBorderCrossingDateLabel, 500, 800);
+		payBorderCrossingDateLabel.setText("Обязательное поле");
+		Runnable payBorderCrossingDateChecker = () -> {
+			String value = payBorderCrossingDateInput.getText();
+			if (StringUtils.isEmpty(value)) {
+				payBorderCrossingDateLabel.setText("Обязательное поле");
+			} else {
+				payBorderCrossingDateLabel.setText("");
+			}
+		};
+		payBorderCrossingDateInput.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyReleased(KeyEvent e) {
+				payBorderCrossingDateChecker.run();
+			}
+		});
+
 		addComponentToFrame(new JLabel("Базовая ставка УС"), 5, 820);
 		addComponentToFrame(payDutyTaxFeeRateInput, 250, 820);
 		addComponentToFrame(new JLabel("Коэффициент"), 5, 840);
@@ -573,8 +615,8 @@ public abstract class BaseFrame extends JFrame implements ActionListener {
 		addComponentToFrame(new JLabel("Подтверждение уплаты УС. Дата"), 800, 500);
 		addComponentToFrame(paymentDate, 1050, 500);
 
-		labels = List.of(surNameLabel, nameLabel, innLabel, udTransportCategoryCodeLabel, udVinLabel);
-		checkers = List.of(surNameChecker, nameChecker, innChecker, categoryChecker, vinChecker);
+		labels = List.of(surNameLabel, nameLabel, innLabel, udTransportCategoryCodeLabel, udVinLabel, payBorderCrossingDateLabel, udTotalWeightLabel);
+		checkers = List.of(surNameChecker, nameChecker, innChecker, categoryChecker, vinChecker, payBorderCrossingDateChecker, udTotalWeightChecker);
 
 		container.setFocusTraversalPolicyProvider(true);
 		container.setFocusTraversalPolicy(setUpTraversalPolicy());

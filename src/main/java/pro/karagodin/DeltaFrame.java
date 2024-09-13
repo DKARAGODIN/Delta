@@ -539,6 +539,10 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				utilDetails.setBorderCrossingDate(d2);
 			}
 		}
+		if (StringUtils.isNotEmpty(payDutyTaxFeeRateInput.getText()))
+			utilDetails.setDutyTaxFeeRateValue(new BigDecimal(payDutyTaxFeeRateInput.getText()));
+		if (StringUtils.isNotEmpty(payCoefficientInput.getText()))
+			utilDetails.setCoefficient(new BigDecimal(payCoefficientInput.getText()));
 
 		List<AttachedDocumentType> newDocuments = new ArrayList<>();
 		fillDoc(newDocuments, doc1KindCodeInput, doc1NameInput, doc1NumberInput, doc1DateInput);
