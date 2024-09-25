@@ -405,8 +405,6 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			address.setCountryCode((String) countryCodeInput.getSelectedItem());
 		if (StringUtils.isNotEmpty(countryNameInput.getText()))
 			address.setCounryName(countryNameInput.getText());
-		if (StringUtils.isNotEmpty(regionNameInput.getText()))
-			address.setRegion(regionNameInput.getText());
 		if (StringUtils.isNotEmpty(townNameInput.getText()))
 			address.setTown(townNameInput.getText());
 		if (StringUtils.isNotEmpty(streetNameInput.getText()))
@@ -589,18 +587,7 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 			String passport = StringUtils.defaultString(identityCardSeriesInput.getText()) + " № " + StringUtils.defaultString(identityCardNumberInput.getText())
 					+ " выдан " + StringUtils.defaultString(identityOrganisationNameInput.getText()) + " " + StringUtils.defaultString(identityCardDateInput.getText());
 
-			StringBuilder addressSb = new StringBuilder();
-			addressSb.append(data.getPayer().getFirst().getTPOAddress().getRegion());
-			addressSb.append(" ");
-			addressSb.append(data.getPayer().getFirst().getTPOAddress().getTown());
-			addressSb.append(" ");
-			addressSb.append(data.getPayer().getFirst().getTPOAddress().getStreetHouse());
-			addressSb.append(" ");
-			addressSb.append(data.getPayer().getFirst().getTPOAddress().getHouse());
-			addressSb.append(" ");
-			addressSb.append(data.getPayer().getFirst().getTPOAddress().getRoom());
-			String payerAddress = addressSb.toString();
-
+			String payerAddress = getPayerAddress();
 
 			String brokerCountryStr = countryOfImport.getSelectedItem() == null ? "" : (String) countryOfImport.getSelectedItem();
 			String c = "";
@@ -875,5 +862,20 @@ public class DeltaFrame extends BaseFrame implements ActionListener {
 				document.write(out);
 			}
 		}
+	}
+
+	private String getPayerAddress() {
+		StringBuilder addressSb = new StringBuilder();
+		addressSb.append(StringUtils.defaultString(regionNameInput.getText()));
+		addressSb.append(" ");
+		addressSb.append(StringUtils.defaultString(townNameInput.getText()));
+		addressSb.append(" ");
+		addressSb.append(StringUtils.defaultString(streetNameInput.getText()));
+		addressSb.append(" ");
+		addressSb.append(StringUtils.defaultString(houseNumberInput.getText()));
+		addressSb.append(" ");
+		addressSb.append(StringUtils.defaultString(roomInput.getText()));
+		String payerAddress = addressSb.toString();
+		return payerAddress;
 	}
 }
